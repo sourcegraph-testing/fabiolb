@@ -30,7 +30,7 @@ func (f *ExcludeByMessage) Add(msg string) {
 }
 
 // Return true if the given message should be included
-func (f *ExcludeByMessage) Exclude(level Level, msg string, args ...interface{}) bool {
+func (f *ExcludeByMessage) Exclude(level Level, msg string, args ...any) bool {
 	_, ok := f.messages[msg]
 	return ok
 }
@@ -39,7 +39,7 @@ func (f *ExcludeByMessage) Exclude(level Level, msg string, args ...interface{})
 type ExcludeByPrefix string
 
 // Matches an message that starts with the prefix.
-func (p ExcludeByPrefix) Exclude(level Level, msg string, args ...interface{}) bool {
+func (p ExcludeByPrefix) Exclude(level Level, msg string, args ...any) bool {
 	return strings.HasPrefix(msg, string(p))
 }
 
@@ -50,17 +50,17 @@ type ExcludeByRegexp struct {
 }
 
 // Exclude the log message if the message string matches the regexp
-func (e ExcludeByRegexp) Exclude(level Level, msg string, args ...interface{}) bool {
+func (e ExcludeByRegexp) Exclude(level Level, msg string, args ...any) bool {
 	return e.Regexp.MatchString(msg)
 }
 
 // ExcludeFuncs is a slice of functions that will called to see if a log entry
 // should be filtered or not. It stops calling functions once at least one returns
 // true.
-type ExcludeFuncs []func(level Level, msg string, args ...interface{}) bool
+type ExcludeFuncs []func(level Level, msg string, args ...any) bool
 
 // Calls each function until one of them returns true
-func (ff ExcludeFuncs) Exclude(level Level, msg string, args ...interface{}) bool {
+func (ff ExcludeFuncs) Exclude(level Level, msg string, args ...any) bool {
 	for _, f := range ff {
 		if f(level, msg, args...) {
 			return true

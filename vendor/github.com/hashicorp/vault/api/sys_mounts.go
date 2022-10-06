@@ -66,7 +66,7 @@ func (c *Sys) Unmount(path string) error {
 }
 
 func (c *Sys) Remount(from, to string) error {
-	body := map[string]interface{}{
+	body := map[string]any{
 		"from": from,
 		"to":   to,
 	}

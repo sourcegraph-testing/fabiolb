@@ -168,7 +168,7 @@ func (t *Target) parseAccessRule(allowDeny string) error {
 
 	// init rules if needed
 	if t.accessRules == nil {
-		t.accessRules = make(map[string][]interface{})
+		t.accessRules = make(map[string][]any)
 	}
 
 	// loop over rule elements

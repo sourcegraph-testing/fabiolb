@@ -194,7 +194,7 @@ func RegisterType(m Message, s messageName) {
 // for a protobuf message representing a map entry.
 //
 // Deprecated: Do not use.
-func RegisterMapType(m interface{}, s messageName) {
+func RegisterMapType(m any, s messageName) {
 	t := reflect.TypeOf(m)
 	if t.Kind() != reflect.Map {
 		panic(fmt.Sprintf("invalid map kind: %v", t))

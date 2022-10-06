@@ -128,7 +128,7 @@ func (c *Logical) List(path string) (*Secret, error) {
 	return ParseSecret(resp.Body)
 }
 
-func (c *Logical) Write(path string, data map[string]interface{}) (*Secret, error) {
+func (c *Logical) Write(path string, data map[string]any) (*Secret, error) {
 	r := c.c.NewRequest("PUT", "/v1/"+path)
 	if err := r.SetJSONBody(data); err != nil {
 		return nil, err
@@ -208,12 +208,12 @@ func (c *Logical) DeleteWithData(path string, data map[string][]string) (*Secret
 }
 
 func (c *Logical) Unwrap(wrappingToken string) (*Secret, error) {
-	var data map[string]interface{}
+	var data map[string]any
 	if wrappingToken != "" {
 		if c.c.Token() == "" {
 			c.c.SetToken(wrappingToken)
 		} else if wrappingToken != c.c.Token() {
-			data = map[string]interface{}{
+			data = map[string]any{
 				"token": wrappingToken,
 			}
 		}

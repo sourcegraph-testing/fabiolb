@@ -29,7 +29,7 @@ var file_github_com_golang_protobuf_ptypes_duration_duration_proto_rawDesc = []b
 	0x6f, 0x6e, 0x50, 0x00, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
-var file_github_com_golang_protobuf_ptypes_duration_duration_proto_goTypes = []interface{}{}
+var file_github_com_golang_protobuf_ptypes_duration_duration_proto_goTypes = []any{}
 var file_github_com_golang_protobuf_ptypes_duration_duration_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type

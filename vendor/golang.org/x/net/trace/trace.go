@@ -323,7 +323,7 @@ type Trace interface {
 	// LazyPrintf evaluates its arguments with fmt.Sprintf each time the
 	// /debug/requests page is rendered. Any memory referenced by a will be
 	// pinned until the trace is finished and later discarded.
-	LazyPrintf(format string, a ...interface{})
+	LazyPrintf(format string, a ...any)
 
 	// SetError declares that this trace resulted in an error.
 	SetError()
@@ -332,7 +332,7 @@ type Trace interface {
 	// f will be called for each event passed to LazyLog at a time when
 	// it is no longer required, whether while the trace is still active
 	// and the event is discarded, or when a completed trace is discarded.
-	SetRecycler(f func(interface{}))
+	SetRecycler(f func(any))
 
 	// SetTraceInfo sets the trace info for the trace.
 	// This is currently unused.
@@ -350,7 +350,7 @@ type Trace interface {
 
 type lazySprintf struct {
 	format string
-	a      []interface{}
+	a      []any
 }
 
 func (l *lazySprintf) String() string {
@@ -689,7 +689,7 @@ type event struct {
 	NewDay     bool          // whether this event is on a different day to the previous event
 	Recyclable bool          // whether this event was passed via LazyLog
 	Sensitive  bool          // whether this event contains sensitive information
-	What       interface{}   // string or fmt.Stringer
+	What       any           // string or fmt.Stringer
 }
 
 // WhenString returns a string representation of the elapsed time of the event.
@@ -724,7 +724,7 @@ type trace struct {
 	mu        sync.RWMutex
 	events    []event // Append-only sequence of events (modulo discards).
 	maxEvents int
-	recycler  func(interface{})
+	recycler  func(any)
 	IsError   bool          // Whether this trace resulted in an error.
 	Elapsed   time.Duration // Elapsed time for this trace, zero while active.
 	traceID   uint64        // Trace information if non-zero.
@@ -773,7 +773,7 @@ func (tr *trace) delta(t time.Time) (time.Duration, bool) {
 	return t.Sub(prev), prev.Day() != t.Day()
 }
 
-func (tr *trace) addEvent(x interface{}, recyclable, sensitive bool) {
+func (tr *trace) addEvent(x any, recyclable, sensitive bool) {
 	if DebugUseAfterFinish && tr.finishStack != nil {
 		buf := make([]byte, 4<<10) // 4 KB should be enough
 		n := runtime.Stack(buf, false)
@@ -830,7 +830,7 @@ func (tr *trace) LazyLog(x fmt.Stringer, sensitive bool) {
 	tr.addEvent(x, true, sensitive)
 }
 
-func (tr *trace) LazyPrintf(format string, a ...interface{}) {
+func (tr *trace) LazyPrintf(format string, a ...any) {
 	tr.addEvent(&lazySprintf{format, a}, false, false)
 }
 
@@ -840,7 +840,7 @@ func (tr *trace) SetError() {
 	tr.mu.Unlock()
 }
 
-func (tr *trace) SetRecycler(f func(interface{})) {
+func (tr *trace) SetRecycler(f func(any)) {
 	tr.mu.Lock()
 	tr.recycler = f
 	tr.mu.Unlock()
@@ -870,7 +870,7 @@ func (tr *trace) unref() {
 		tr.mu.RLock()
 		if tr.recycler != nil {
 			// freeTrace clears tr, so we hold tr.recycler and tr.events here.
-			go func(f func(interface{}), es []event) {
+			go func(f func(any), es []event) {
 				for _, e := range es {
 					if e.Recyclable {
 						f(e.What)

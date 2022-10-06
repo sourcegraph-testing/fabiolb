@@ -130,7 +130,7 @@ func (l *lexer) unread() {
 	l.hasRune = true
 }
 
-func (l *lexer) errorf(f string, v ...interface{}) {
+func (l *lexer) errorf(f string, v ...any) {
 	l.err = fmt.Errorf(f, v...)
 }
 

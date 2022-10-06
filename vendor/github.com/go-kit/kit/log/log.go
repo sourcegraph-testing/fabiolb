@@ -8,7 +8,7 @@ import "errors"
 // particular, any implementation of Logger that appends to keyvals or
 // modifies or retains any of its elements must make a copy first.
 type Logger interface {
-	Log(keyvals ...interface{}) error
+	Log(keyvals ...any) error
 }
 
 // ErrMissingValue is appended to keyvals slices with odd length to substitute
@@ -21,7 +21,7 @@ var ErrMissingValue = errors.New("(MISSING)")
 //
 // The returned Logger replaces all value elements (odd indexes) containing a
 // Valuer with their generated value for each call to its Log method.
-func With(logger Logger, keyvals ...interface{}) Logger {
+func With(logger Logger, keyvals ...any) Logger {
 	if len(keyvals) == 0 {
 		return logger
 	}
@@ -47,7 +47,7 @@ func With(logger Logger, keyvals ...interface{}) Logger {
 //
 // The returned Logger replaces all value elements (odd indexes) containing a
 // Valuer with their generated value for each call to its Log method.
-func WithPrefix(logger Logger, keyvals ...interface{}) Logger {
+func WithPrefix(logger Logger, keyvals ...any) Logger {
 	if len(keyvals) == 0 {
 		return logger
 	}
@@ -60,7 +60,7 @@ func WithPrefix(logger Logger, keyvals ...interface{}) Logger {
 	if len(keyvals)%2 != 0 {
 		n++
 	}
-	kvs := make([]interface{}, 0, n)
+	kvs := make([]any, 0, n)
 	kvs = append(kvs, keyvals...)
 	if len(kvs)%2 != 0 {
 		kvs = append(kvs, ErrMissingValue)
@@ -87,14 +87,14 @@ func WithPrefix(logger Logger, keyvals ...interface{}) Logger {
 //
 // Two implementation details provide the needed stack depth consistency.
 //
-//    1. newContext avoids introducing an additional layer when asked to
-//       wrap another context.
-//    2. With and WithPrefix avoid introducing an additional layer by
-//       returning a newly constructed context with a merged keyvals rather
-//       than simply wrapping the existing context.
+//  1. newContext avoids introducing an additional layer when asked to
+//     wrap another context.
+//  2. With and WithPrefix avoid introducing an additional layer by
+//     returning a newly constructed context with a merged keyvals rather
+//     than simply wrapping the existing context.
 type context struct {
 	logger    Logger
-	keyvals   []interface{}
+	keyvals   []any
 	hasValuer bool
 }
 
@@ -108,7 +108,7 @@ func newContext(logger Logger) *context {
 // Log replaces all value elements (odd indexes) containing a Valuer in the
 // stored context with their generated value, appends keyvals, and passes the
 // result to the wrapped Logger.
-func (l *context) Log(keyvals ...interface{}) error {
+func (l *context) Log(keyvals ...any) error {
 	kvs := append(l.keyvals, keyvals...)
 	if len(kvs)%2 != 0 {
 		kvs = append(kvs, ErrMissingValue)
@@ -117,7 +117,7 @@ func (l *context) Log(keyvals ...interface{}) error {
 		// If no keyvals were appended above then we must copy l.keyvals so
 		// that future log events will reevaluate the stored Valuers.
 		if len(keyvals) == 0 {
-			kvs = append([]interface{}{}, l.keyvals...)
+			kvs = append([]any{}, l.keyvals...)
 		}
 		bindValues(kvs[:len(l.keyvals)])
 	}
@@ -127,9 +127,9 @@ func (l *context) Log(keyvals ...interface{}) error {
 // LoggerFunc is an adapter to allow use of ordinary functions as Loggers. If
 // f is a function with the appropriate signature, LoggerFunc(f) is a Logger
 // object that calls f.
-type LoggerFunc func(...interface{}) error
+type LoggerFunc func(...any) error
 
 // Log implements Logger by calling f(keyvals...).
-func (f LoggerFunc) Log(keyvals ...interface{}) error {
+func (f LoggerFunc) Log(keyvals ...any) error {
 	return f(keyvals...)
 }

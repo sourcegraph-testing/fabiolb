@@ -446,6 +446,7 @@ type ExtensionDescriptors interface {
 // relative to the parent that it is declared within.
 //
 // For example:
+//
 //	syntax = "proto2";
 //	package example;
 //	message FooMessage {
@@ -475,7 +476,7 @@ type ExtensionType interface {
 	//
 	// ValueOf is more extensive than protoreflect.ValueOf for a given field's
 	// value as it has more type information available.
-	ValueOf(interface{}) Value
+	ValueOf(any) Value
 
 	// InterfaceOf completely unwraps the Value to the underlying Go type.
 	// InterfaceOf panics if the input is nil or does not represent the
@@ -484,13 +485,13 @@ type ExtensionType interface {
 	//
 	// InterfaceOf is able to unwrap the Value further than Value.Interface
 	// as it has more type information available.
-	InterfaceOf(Value) interface{}
+	InterfaceOf(Value) any
 
 	// IsValidValue reports whether the Value is valid to assign to the field.
 	IsValidValue(Value) bool
 
 	// IsValidInterface reports whether the input is valid to assign to the field.
-	IsValidInterface(interface{}) bool
+	IsValidInterface(any) bool
 }
 
 // EnumDescriptor describes an enum and

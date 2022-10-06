@@ -227,7 +227,7 @@ lastLiterals:
 
 // Pool of hash tables for CompressBlock.
 var htPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return new([htSize]int)
 	},
 }

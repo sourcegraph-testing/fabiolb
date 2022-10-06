@@ -20,12 +20,12 @@ func NewJSONLogger(w io.Writer) Logger {
 	return &jsonLogger{w}
 }
 
-func (l *jsonLogger) Log(keyvals ...interface{}) error {
+func (l *jsonLogger) Log(keyvals ...any) error {
 	n := (len(keyvals) + 1) / 2 // +1 to handle case when len is odd
-	m := make(map[string]interface{}, n)
+	m := make(map[string]any, n)
 	for i := 0; i < len(keyvals); i += 2 {
 		k := keyvals[i]
-		var v interface{} = ErrMissingValue
+		var v any = ErrMissingValue
 		if i+1 < len(keyvals) {
 			v = keyvals[i+1]
 		}
@@ -34,7 +34,7 @@ func (l *jsonLogger) Log(keyvals ...interface{}) error {
 	return json.NewEncoder(l.Writer).Encode(m)
 }
 
-func merge(dst map[string]interface{}, k, v interface{}) {
+func merge(dst map[string]any, k, v any) {
 	var key string
 	switch x := k.(type) {
 	case string:
@@ -74,7 +74,7 @@ func safeString(str fmt.Stringer) (s string) {
 	return
 }
 
-func safeError(err error) (s interface{}) {
+func safeError(err error) (s any) {
 	defer func() {
 		if panicVal := recover(); panicVal != nil {
 			if v := reflect.ValueOf(err); v.Kind() == reflect.Ptr && v.IsNil() {

@@ -98,7 +98,7 @@ func (e *legacyEnumWrapper) Number() pref.EnumNumber {
 func (e *legacyEnumWrapper) ProtoReflect() pref.Enum {
 	return e
 }
-func (e *legacyEnumWrapper) protoUnwrap() interface{} {
+func (e *legacyEnumWrapper) protoUnwrap() any {
 	v := reflect.New(e.goTyp).Elem()
 	v.SetInt(int64(e.num))
 	return v.Interface()

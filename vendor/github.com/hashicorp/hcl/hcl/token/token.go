@@ -115,7 +115,7 @@ func (t Token) String() string {
 //
 // This can only be called for literal types. If it is called for any other
 // type, this will panic.
-func (t Token) Value() interface{} {
+func (t Token) Value() any {
 	switch t.Type {
 	case BOOL:
 		if t.Text == "true" {

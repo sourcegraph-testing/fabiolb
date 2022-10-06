@@ -19,7 +19,7 @@
 // Package attributes defines a generic key/value store used in various gRPC
 // components.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This package is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -31,17 +31,17 @@ import "fmt"
 // key/value pairs.  Keys must be hashable, and users should define their own
 // types for keys.
 type Attributes struct {
-	m map[interface{}]interface{}
+	m map[any]any
 }
 
 // New returns a new Attributes containing all key/value pairs in kvs.  If the
 // same key appears multiple times, the last value overwrites all previous
 // values for that key.  Panics if len(kvs) is not even.
-func New(kvs ...interface{}) *Attributes {
+func New(kvs ...any) *Attributes {
 	if len(kvs)%2 != 0 {
 		panic(fmt.Sprintf("attributes.New called with unexpected input: len(kvs) = %v", len(kvs)))
 	}
-	a := &Attributes{m: make(map[interface{}]interface{}, len(kvs)/2)}
+	a := &Attributes{m: make(map[any]any, len(kvs)/2)}
 	for i := 0; i < len(kvs)/2; i++ {
 		a.m[kvs[i*2]] = kvs[i*2+1]
 	}
@@ -52,14 +52,14 @@ func New(kvs ...interface{}) *Attributes {
 // kvs.  Panics if len(kvs) is not even.  If the same key appears multiple
 // times, the last value overwrites all previous values for that key.  To
 // remove an existing key, use a nil value.
-func (a *Attributes) WithValues(kvs ...interface{}) *Attributes {
+func (a *Attributes) WithValues(kvs ...any) *Attributes {
 	if a == nil {
 		return New(kvs...)
 	}
 	if len(kvs)%2 != 0 {
 		panic(fmt.Sprintf("attributes.New called with unexpected input: len(kvs) = %v", len(kvs)))
 	}
-	n := &Attributes{m: make(map[interface{}]interface{}, len(a.m)+len(kvs)/2)}
+	n := &Attributes{m: make(map[any]any, len(a.m)+len(kvs)/2)}
 	for k, v := range a.m {
 		n.m[k] = v
 	}
@@ -71,7 +71,7 @@ func (a *Attributes) WithValues(kvs ...interface{}) *Attributes {
 
 // Value returns the value associated with these attributes for key, or nil if
 // no value is associated with key.
-func (a *Attributes) Value(key interface{}) interface{} {
+func (a *Attributes) Value(key any) any {
 	if a == nil {
 		return nil
 	}

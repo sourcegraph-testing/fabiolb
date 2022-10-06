@@ -355,7 +355,7 @@ func chainUnaryClientInterceptors(cc *ClientConn) {
 	} else if len(interceptors) == 1 {
 		chainedInt = interceptors[0]
 	} else {
-		chainedInt = func(ctx context.Context, method string, req, reply interface{}, cc *ClientConn, invoker UnaryInvoker, opts ...CallOption) error {
+		chainedInt = func(ctx context.Context, method string, req, reply any, cc *ClientConn, invoker UnaryInvoker, opts ...CallOption) error {
 			return interceptors[0](ctx, method, req, reply, cc, getChainUnaryInvoker(interceptors, 0, invoker), opts...)
 		}
 	}
@@ -367,7 +367,7 @@ func getChainUnaryInvoker(interceptors []UnaryClientInterceptor, curr int, final
 	if curr == len(interceptors)-1 {
 		return finalInvoker
 	}
-	return func(ctx context.Context, method string, req, reply interface{}, cc *ClientConn, opts ...CallOption) error {
+	return func(ctx context.Context, method string, req, reply any, cc *ClientConn, opts ...CallOption) error {
 		return interceptors[curr+1](ctx, method, req, reply, cc, getChainUnaryInvoker(interceptors, curr+1, finalInvoker), opts...)
 	}
 }
@@ -454,7 +454,7 @@ func (csm *connectivityStateManager) getNotifyChan() <-chan struct{} {
 type ClientConnInterface interface {
 	// Invoke performs a unary RPC and returns after the response is received
 	// into reply.
-	Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...CallOption) error
+	Invoke(ctx context.Context, method string, args any, reply any, opts ...CallOption) error
 	// NewStream begins a streaming RPC.
 	NewStream(ctx context.Context, desc *StreamDesc, method string, opts ...CallOption) (ClientStream, error)
 }
@@ -509,7 +509,7 @@ type ClientConn struct {
 // WaitForStateChange waits until the connectivity.State of ClientConn changes from sourceState or
 // ctx expires. A true value is returned in former case and false in latter.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -528,7 +528,7 @@ func (cc *ClientConn) WaitForStateChange(ctx context.Context, sourceState connec
 
 // GetState returns the connectivity.State of ClientConn.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -782,7 +782,7 @@ func (cc *ClientConn) channelzMetric() *channelz.ChannelInternalMetric {
 
 // Target returns the target string of the ClientConn.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -838,9 +838,9 @@ func (ac *addrConn) connect() error {
 //
 // If ac is Ready, it checks whether current connected address of ac is in the
 // new addrs list.
-//  - If true, it updates ac.addrs and returns true. The ac will keep using
-//    the existing connection.
-//  - If false, it does nothing and returns false.
+//   - If true, it updates ac.addrs and returns true. The ac will keep using
+//     the existing connection.
+//   - If false, it does nothing and returns false.
 func (ac *addrConn) tryUpdateAddrs(addrs []resolver.Address) bool {
 	ac.mu.Lock()
 	defer ac.mu.Unlock()
@@ -986,7 +986,7 @@ func (cc *ClientConn) resolveNow(o resolver.ResolveNowOptions) {
 // However, if a previously unavailable network becomes available, this may be
 // used to trigger an immediate reconnect.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -1360,7 +1360,7 @@ func (ac *addrConn) startHealthCheck(ctx context.Context) {
 
 	// Set up the health check helper functions.
 	currentTr := ac.transport
-	newStream := func(method string) (interface{}, error) {
+	newStream := func(method string) (any, error) {
 		ac.mu.Lock()
 		if ac.transport != currentTr {
 			ac.mu.Unlock()

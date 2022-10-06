@@ -20,9 +20,9 @@ import (
 
 // RuleSetGroupFormula defines a formula for raising alerts
 type RuleSetGroupFormula struct {
-	Expression    interface{} `json:"expression"`     // string or uint BUG doc: string, api: string or numeric
-	RaiseSeverity interface{} `json:"raise_severity"` // string or uint BUG doc: numeric, api: string or numeric
-	Wait          uint        `json:"wait"`           // uint
+	Expression    any  `json:"expression"`     // string or uint BUG doc: string, api: string or numeric
+	RaiseSeverity any  `json:"raise_severity"` // string or uint BUG doc: numeric, api: string or numeric
+	Wait          uint `json:"wait"`           // uint
 }
 
 // RuleSetGroupCondition defines conditions for raising alerts

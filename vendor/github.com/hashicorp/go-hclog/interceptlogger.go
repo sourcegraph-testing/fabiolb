@@ -30,7 +30,7 @@ func NewInterceptLogger(opts *LoggerOptions) InterceptLogger {
 	return intercept
 }
 
-func (i *interceptLogger) Log(level Level, msg string, args ...interface{}) {
+func (i *interceptLogger) Log(level Level, msg string, args ...any) {
 	i.Logger.Log(level, msg, args...)
 	if atomic.LoadInt32(i.sinkCount) == 0 {
 		return
@@ -44,7 +44,7 @@ func (i *interceptLogger) Log(level Level, msg string, args ...interface{}) {
 }
 
 // Emit the message and args at TRACE level to log and sinks
-func (i *interceptLogger) Trace(msg string, args ...interface{}) {
+func (i *interceptLogger) Trace(msg string, args ...any) {
 	i.Logger.Trace(msg, args...)
 	if atomic.LoadInt32(i.sinkCount) == 0 {
 		return
@@ -58,7 +58,7 @@ func (i *interceptLogger) Trace(msg string, args ...interface{}) {
 }
 
 // Emit the message and args at DEBUG level to log and sinks
-func (i *interceptLogger) Debug(msg string, args ...interface{}) {
+func (i *interceptLogger) Debug(msg string, args ...any) {
 	i.Logger.Debug(msg, args...)
 	if atomic.LoadInt32(i.sinkCount) == 0 {
 		return
@@ -72,7 +72,7 @@ func (i *interceptLogger) Debug(msg string, args ...interface{}) {
 }
 
 // Emit the message and args at INFO level to log and sinks
-func (i *interceptLogger) Info(msg string, args ...interface{}) {
+func (i *interceptLogger) Info(msg string, args ...any) {
 	i.Logger.Info(msg, args...)
 	if atomic.LoadInt32(i.sinkCount) == 0 {
 		return
@@ -86,7 +86,7 @@ func (i *interceptLogger) Info(msg string, args ...interface{}) {
 }
 
 // Emit the message and args at WARN level to log and sinks
-func (i *interceptLogger) Warn(msg string, args ...interface{}) {
+func (i *interceptLogger) Warn(msg string, args ...any) {
 	i.Logger.Warn(msg, args...)
 	if atomic.LoadInt32(i.sinkCount) == 0 {
 		return
@@ -100,7 +100,7 @@ func (i *interceptLogger) Warn(msg string, args ...interface{}) {
 }
 
 // Emit the message and args at ERROR level to log and sinks
-func (i *interceptLogger) Error(msg string, args ...interface{}) {
+func (i *interceptLogger) Error(msg string, args ...any) {
 	i.Logger.Error(msg, args...)
 	if atomic.LoadInt32(i.sinkCount) == 0 {
 		return
@@ -113,10 +113,10 @@ func (i *interceptLogger) Error(msg string, args ...interface{}) {
 	}
 }
 
-func (i *interceptLogger) retrieveImplied(args ...interface{}) []interface{} {
+func (i *interceptLogger) retrieveImplied(args ...any) []any {
 	top := i.Logger.ImpliedArgs()
 
-	cp := make([]interface{}, len(top)+len(args))
+	cp := make([]any, len(top)+len(args))
 	copy(cp, top)
 	copy(cp[len(top):], args)
 
@@ -180,7 +180,7 @@ func (i *interceptLogger) ResetNamedIntercept(name string) InterceptLogger {
 // Return a sub-Logger for which every emitted log message will contain
 // the given key/value pairs. This is used to create a context specific
 // Logger.
-func (i *interceptLogger) With(args ...interface{}) Logger {
+func (i *interceptLogger) With(args ...any) Logger {
 	var sub interceptLogger
 
 	sub = *i

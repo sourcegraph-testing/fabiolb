@@ -23,7 +23,7 @@ var (
 
 // Unmarshal accepts a byte slice as input and writes the
 // data to the value pointed to by v.
-func Unmarshal(bs []byte, v interface{}) error {
+func Unmarshal(bs []byte, v any) error {
 	root, err := parse(bs)
 	if err != nil {
 		return err
@@ -34,7 +34,7 @@ func Unmarshal(bs []byte, v interface{}) error {
 
 // Decode reads the given input and decodes it into the structure
 // given by `out`.
-func Decode(out interface{}, in string) error {
+func Decode(out any, in string) error {
 	obj, err := Parse(in)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func Decode(out interface{}, in string) error {
 
 // DecodeObject is a lower-level version of Decode. It decodes a
 // raw Object into the given output.
-func DecodeObject(out interface{}, n ast.Node) error {
+func DecodeObject(out any, n ast.Node) error {
 	val := reflect.ValueOf(out)
 	if val.Kind() != reflect.Ptr {
 		return errors.New("result must be a pointer")
@@ -216,7 +216,7 @@ func (d *decoder) decodeInterface(name string, node ast.Node, result reflect.Val
 		// decode objects into map[string]interface{}, otherwise we decode
 		// them into lists.
 		if len(d.stack) == 0 || d.stack[len(d.stack)-1] == reflect.Slice {
-			var temp map[string]interface{}
+			var temp map[string]any
 			tempVal := reflect.ValueOf(temp)
 			result := reflect.MakeMap(
 				reflect.MapOf(
@@ -225,7 +225,7 @@ func (d *decoder) decodeInterface(name string, node ast.Node, result reflect.Val
 
 			set = result
 		} else {
-			var temp []map[string]interface{}
+			var temp []map[string]any
 			tempVal := reflect.ValueOf(temp)
 			result := reflect.MakeSlice(
 				reflect.SliceOf(tempVal.Type().Elem()), 0, len(n.Items))
@@ -236,7 +236,7 @@ func (d *decoder) decodeInterface(name string, node ast.Node, result reflect.Val
 		// decode objects into map[string]interface{}, otherwise we decode
 		// them into lists.
 		if len(d.stack) == 0 || d.stack[len(d.stack)-1] == reflect.Slice {
-			var temp map[string]interface{}
+			var temp map[string]any
 			tempVal := reflect.ValueOf(temp)
 			result := reflect.MakeMap(
 				reflect.MapOf(
@@ -245,14 +245,14 @@ func (d *decoder) decodeInterface(name string, node ast.Node, result reflect.Val
 
 			set = result
 		} else {
-			var temp []map[string]interface{}
+			var temp []map[string]any
 			tempVal := reflect.ValueOf(temp)
 			result := reflect.MakeSlice(
 				reflect.SliceOf(tempVal.Type().Elem()), 0, 1)
 			set = result
 		}
 	case *ast.ListType:
-		var temp []interface{}
+		var temp []any
 		tempVal := reflect.ValueOf(temp)
 		result := reflect.MakeSlice(
 			reflect.SliceOf(tempVal.Type().Elem()), 0, 0)

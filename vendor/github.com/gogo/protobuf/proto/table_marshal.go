@@ -147,7 +147,7 @@ func (a *InternalMessageInfo) Marshal(b []byte, msg Message, deterministic bool)
 	return u.marshal(b, ptr, deterministic)
 }
 
-func getMessageMarshalInfo(msg interface{}, a *InternalMessageInfo) *marshalInfo {
+func getMessageMarshalInfo(msg any, a *InternalMessageInfo) *marshalInfo {
 	// u := a.marshal, but atomically.
 	// We use an atomic here to ensure memory consistency.
 	u := atomicLoadMarshalInfo(&a.marshal)
@@ -387,7 +387,7 @@ func (u *marshalInfo) computeMarshalInfo() {
 	}
 
 	// get oneof implementers
-	var oneofImplementers []interface{}
+	var oneofImplementers []any
 	// gogo: isOneofMessage is needed for embedded oneof messages, without a marshaler and unmarshaler
 	if isOneofMessage {
 		switch m := reflect.Zero(reflect.PtrTo(t)).Interface().(type) {
@@ -494,7 +494,7 @@ func (fi *marshalFieldInfo) computeMarshalFieldInfo(f *reflect.StructField) {
 	fi.setMarshaler(f, tags)
 }
 
-func (fi *marshalFieldInfo) computeOneofFieldInfo(f *reflect.StructField, oneofImplementers []interface{}) {
+func (fi *marshalFieldInfo) computeOneofFieldInfo(f *reflect.StructField, oneofImplementers []any) {
 	fi.field = toField(f)
 	fi.wiretag = math.MaxInt32 // Use a large tag number, make oneofs sorted at the end. This tag will not appear on the wire.
 	fi.isPointer = true

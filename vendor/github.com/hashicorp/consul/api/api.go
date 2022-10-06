@@ -674,7 +674,7 @@ type request struct {
 	params url.Values
 	body   io.Reader
 	header http.Header
-	obj    interface{}
+	obj    any
 	ctx    context.Context
 }
 
@@ -880,7 +880,7 @@ func (c *Client) doRequest(r *request) (time.Duration, *http.Response, error) {
 // Query is used to do a GET request against an endpoint
 // and deserialize the response into an interface using
 // standard Consul conventions.
-func (c *Client) query(endpoint string, out interface{}, q *QueryOptions) (*QueryMeta, error) {
+func (c *Client) query(endpoint string, out any, q *QueryOptions) (*QueryMeta, error) {
 	r := c.newRequest("GET", endpoint)
 	r.setQueryOptions(q)
 	rtt, resp, err := c.doRequest(r)
@@ -901,7 +901,7 @@ func (c *Client) query(endpoint string, out interface{}, q *QueryOptions) (*Quer
 
 // write is used to do a PUT request against an endpoint
 // and serialize/deserialized using the standard Consul conventions.
-func (c *Client) write(endpoint string, in, out interface{}, q *WriteOptions) (*WriteMeta, error) {
+func (c *Client) write(endpoint string, in, out any, q *WriteOptions) (*WriteMeta, error) {
 	r := c.newRequest("PUT", endpoint)
 	r.setWriteOptions(q)
 	r.obj = in
@@ -978,13 +978,13 @@ func parseQueryMeta(resp *http.Response, q *QueryMeta) error {
 }
 
 // decodeBody is used to JSON decode a body
-func decodeBody(resp *http.Response, out interface{}) error {
+func decodeBody(resp *http.Response, out any) error {
 	dec := json.NewDecoder(resp.Body)
 	return dec.Decode(out)
 }
 
 // encodeBody is used to encode a request body
-func encodeBody(obj interface{}) (io.Reader, error) {
+func encodeBody(obj any) (io.Reader, error) {
 	buf := bytes.NewBuffer(nil)
 	enc := json.NewEncoder(buf)
 	if err := enc.Encode(obj); err != nil {

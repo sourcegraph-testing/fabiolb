@@ -1,3 +1,4 @@
+//go:build !windows
 // +build !windows
 
 package metrics
@@ -12,7 +13,7 @@ import (
 // the given syslogger.
 func Syslog(r Registry, d time.Duration, w *syslog.Writer) {
 	for _ = range time.Tick(d) {
-		r.Each(func(name string, i interface{}) {
+		r.Each(func(name string, i any) {
 			switch metric := i.(type) {
 			case Counter:
 				w.Info(fmt.Sprintf("counter %s: count: %d", name, metric.Count()))

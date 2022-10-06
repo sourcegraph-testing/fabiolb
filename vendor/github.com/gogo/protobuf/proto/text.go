@@ -818,7 +818,7 @@ func (tm *TextMarshaler) writeExtensions(w *textWriter, pv reflect.Value) error 
 	return nil
 }
 
-func (tm *TextMarshaler) writeExtension(w *textWriter, name string, pb interface{}) error {
+func (tm *TextMarshaler) writeExtension(w *textWriter, name string, pb any) error {
 	if _, err := fmt.Fprintf(w, "[%s]:", name); err != nil {
 		return err
 	}

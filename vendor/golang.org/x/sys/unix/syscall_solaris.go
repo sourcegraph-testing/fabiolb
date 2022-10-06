@@ -730,7 +730,7 @@ func Munmap(b []byte) (err error) {
 
 type fileObjCookie struct {
 	fobj   *fileObj
-	cookie interface{}
+	cookie any
 }
 
 // EventPort provides a safe abstraction on top of Solaris/illumos Event Ports.
@@ -750,7 +750,7 @@ type EventPort struct {
 	// reference to the cookie around until the event is processed
 	// thus the otherwise seemingly extraneous "cookies" map
 	// The key of this map is a pointer to the corresponding &fCookie.cookie
-	cookies map[*interface{}]*fileObjCookie
+	cookies map[*any]*fileObjCookie
 }
 
 // PortEvent is an abstraction of the port_event C struct.
@@ -758,7 +758,7 @@ type EventPort struct {
 // to see if Path or Fd was the event source. The other will be
 // uninitialized.
 type PortEvent struct {
-	Cookie interface{}
+	Cookie any
 	Events int32
 	Fd     uintptr
 	Path   string
@@ -777,7 +777,7 @@ func NewEventPort() (*EventPort, error) {
 		port:    port,
 		fds:     make(map[uintptr]*fileObjCookie),
 		paths:   make(map[string]*fileObjCookie),
-		cookies: make(map[*interface{}]*fileObjCookie),
+		cookies: make(map[*any]*fileObjCookie),
 	}
 	return e, nil
 }
@@ -819,7 +819,7 @@ func (e *EventPort) FdIsWatched(fd uintptr) bool {
 
 // AssociatePath wraps port_associate(3c) for a filesystem path including
 // creating the necessary file_obj from the provided stat information.
-func (e *EventPort) AssociatePath(path string, stat os.FileInfo, events int, cookie interface{}) error {
+func (e *EventPort) AssociatePath(path string, stat os.FileInfo, events int, cookie any) error {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	if _, found := e.paths[path]; found {
@@ -864,7 +864,7 @@ func (e *EventPort) DissociatePath(path string) error {
 }
 
 // AssociateFd wraps calls to port_associate(3c) on file descriptors.
-func (e *EventPort) AssociateFd(fd uintptr, events int, cookie interface{}) error {
+func (e *EventPort) AssociateFd(fd uintptr, events int, cookie any) error {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	if _, found := e.fds[fd]; found {
@@ -937,7 +937,7 @@ func (e *EventPort) GetOne(t *Timespec) (*PortEvent, error) {
 func (e *EventPort) peIntToExt(peInt *portEvent, peExt *PortEvent) {
 	peExt.Events = peInt.Events
 	peExt.Source = peInt.Source
-	cookie := (*interface{})(unsafe.Pointer(peInt.User))
+	cookie := (*any)(unsafe.Pointer(peInt.User))
 	peExt.Cookie = *cookie
 	switch peInt.Source {
 	case PORT_SOURCE_FD:

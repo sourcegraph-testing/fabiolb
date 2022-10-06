@@ -14,7 +14,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-func ParseDurationSecond(in interface{}) (time.Duration, error) {
+func ParseDurationSecond(in any) (time.Duration, error) {
 	var dur time.Duration
 	jsonIn, ok := in.(json.Number)
 	if ok {
@@ -67,7 +67,7 @@ func ParseDurationSecond(in interface{}) (time.Duration, error) {
 	return dur, nil
 }
 
-func ParseInt(in interface{}) (int64, error) {
+func ParseInt(in any) (int64, error) {
 	var ret int64
 	jsonIn, ok := in.(json.Number)
 	if ok {
@@ -104,7 +104,7 @@ func ParseInt(in interface{}) (int64, error) {
 	return ret, nil
 }
 
-func ParseBool(in interface{}) (bool, error) {
+func ParseBool(in any) (bool, error) {
 	var result bool
 	if err := mapstructure.WeakDecode(in, &result); err != nil {
 		return false, err
@@ -112,7 +112,7 @@ func ParseBool(in interface{}) (bool, error) {
 	return result, nil
 }
 
-func ParseCommaStringSlice(in interface{}) ([]string, error) {
+func ParseCommaStringSlice(in any) ([]string, error) {
 	rawString, ok := in.(string)
 	if ok && rawString == "" {
 		return []string{}, nil
@@ -133,7 +133,7 @@ func ParseCommaStringSlice(in interface{}) ([]string, error) {
 	return strutil.TrimStrings(result), nil
 }
 
-func ParseAddrs(addrs interface{}) ([]*sockaddr.SockAddrMarshaler, error) {
+func ParseAddrs(addrs any) ([]*sockaddr.SockAddrMarshaler, error) {
 	out := make([]*sockaddr.SockAddrMarshaler, 0)
 	stringAddrs := make([]string, 0)
 
@@ -147,8 +147,8 @@ func ParseAddrs(addrs interface{}) ([]*sockaddr.SockAddrMarshaler, error) {
 	case []string:
 		stringAddrs = addrs.([]string)
 
-	case []interface{}:
-		for _, v := range addrs.([]interface{}) {
+	case []any:
+		for _, v := range addrs.([]any) {
 			stringAddr, ok := v.(string)
 			if !ok {
 				return nil, fmt.Errorf("error parsing %v as string", v)

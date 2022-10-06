@@ -76,7 +76,7 @@ func (b *Breaker) Go(work func() error) error {
 }
 
 func (b *Breaker) doWork(state uint32, work func() error) error {
-	var panicValue interface{}
+	var panicValue any
 
 	result := func() error {
 		defer func() {
@@ -103,7 +103,7 @@ func (b *Breaker) doWork(state uint32, work func() error) error {
 	return result
 }
 
-func (b *Breaker) processResult(result error, panicValue interface{}) {
+func (b *Breaker) processResult(result error, panicValue any) {
 	b.lock.Lock()
 	defer b.lock.Unlock()
 

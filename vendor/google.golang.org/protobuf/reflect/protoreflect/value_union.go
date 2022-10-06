@@ -59,7 +59,7 @@ type Value value
 // ValueOf returns a Value initialized with the concrete value stored in v.
 // This panics if the type does not match one of the allowed types in the
 // Value union.
-func ValueOf(v interface{}) Value {
+func ValueOf(v any) Value {
 	switch v := v.(type) {
 	case nil:
 		return Value{}
@@ -169,7 +169,7 @@ func (v Value) IsValid() bool {
 // Interface returns v as an interface{}.
 //
 // Invariant: v == ValueOf(v).Interface()
-func (v Value) Interface() interface{} {
+func (v Value) Interface() any {
 	switch v.typ {
 	case nilType:
 		return nil
@@ -367,6 +367,7 @@ func (v Value) MapKey() MapKey {
 //	╚═════════╧═════════════════════════════════════╝
 //
 // A MapKey is constructed and accessed through a Value:
+//
 //	k := ValueOf("hash").MapKey() // convert string to MapKey
 //	s := k.String()               // convert MapKey to string
 //
@@ -380,7 +381,7 @@ func (k MapKey) IsValid() bool {
 }
 
 // Interface returns k as an interface{}.
-func (k MapKey) Interface() interface{} {
+func (k MapKey) Interface() any {
 	return Value(k).Interface()
 }
 

@@ -1,3 +1,4 @@
+//go:build lz4debug
 // +build lz4debug
 
 package lz4
@@ -11,7 +12,7 @@ import (
 
 const debugFlag = true
 
-func debug(args ...interface{}) {
+func debug(args ...any) {
 	_, file, line, _ := runtime.Caller(1)
 	file = filepath.Base(file)
 

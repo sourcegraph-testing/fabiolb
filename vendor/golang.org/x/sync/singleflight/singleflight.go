@@ -22,7 +22,7 @@ var errGoexit = errors.New("runtime.Goexit was called")
 // A panicError is an arbitrary value recovered from a panic
 // with the stack trace during the execution of given function.
 type panicError struct {
-	value interface{}
+	value any
 	stack []byte
 }
 
@@ -31,7 +31,7 @@ func (p *panicError) Error() string {
 	return fmt.Sprintf("%v\n\n%s", p.value, p.stack)
 }
 
-func newPanicError(v interface{}) error {
+func newPanicError(v any) error {
 	stack := debug.Stack()
 
 	// The first line of the stack trace is of the form "goroutine N [status]:"
@@ -49,7 +49,7 @@ type call struct {
 
 	// These fields are written once before the WaitGroup is done
 	// and are only read after the WaitGroup is done.
-	val interface{}
+	val any
 	err error
 
 	// forgotten indicates whether Forget was called with this call's key
@@ -73,7 +73,7 @@ type Group struct {
 // Result holds the results of Do, so they can be passed
 // on a channel.
 type Result struct {
-	Val    interface{}
+	Val    any
 	Err    error
 	Shared bool
 }
@@ -83,7 +83,7 @@ type Result struct {
 // time. If a duplicate comes in, the duplicate caller waits for the
 // original to complete and receives the same results.
 // The return value shared indicates whether v was given to multiple callers.
-func (g *Group) Do(key string, fn func() (interface{}, error)) (v interface{}, err error, shared bool) {
+func (g *Group) Do(key string, fn func() (any, error)) (v any, err error, shared bool) {
 	g.mu.Lock()
 	if g.m == nil {
 		g.m = make(map[string]*call)
@@ -113,7 +113,7 @@ func (g *Group) Do(key string, fn func() (interface{}, error)) (v interface{}, e
 // results when they are ready.
 //
 // The returned channel will not be closed.
-func (g *Group) DoChan(key string, fn func() (interface{}, error)) <-chan Result {
+func (g *Group) DoChan(key string, fn func() (any, error)) <-chan Result {
 	ch := make(chan Result, 1)
 	g.mu.Lock()
 	if g.m == nil {
@@ -136,7 +136,7 @@ func (g *Group) DoChan(key string, fn func() (interface{}, error)) <-chan Result
 }
 
 // doCall handles the single call for a key.
-func (g *Group) doCall(c *call, key string, fn func() (interface{}, error)) {
+func (g *Group) doCall(c *call, key string, fn func() (any, error)) {
 	normalReturn := false
 	recovered := false
 

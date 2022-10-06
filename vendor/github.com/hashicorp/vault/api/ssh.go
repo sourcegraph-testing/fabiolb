@@ -25,7 +25,7 @@ func (c *Client) SSHWithMountPoint(mountPoint string) *SSH {
 }
 
 // Credential invokes the SSH backend API to create a credential to establish an SSH session.
-func (c *SSH) Credential(role string, data map[string]interface{}) (*Secret, error) {
+func (c *SSH) Credential(role string, data map[string]any) (*Secret, error) {
 	r := c.c.NewRequest("PUT", fmt.Sprintf("/v1/%s/creds/%s", c.MountPoint, role))
 	if err := r.SetJSONBody(data); err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (c *SSH) Credential(role string, data map[string]interface{}) (*Secret, err
 
 // SignKey signs the given public key and returns a signed public key to pass
 // along with the SSH request.
-func (c *SSH) SignKey(role string, data map[string]interface{}) (*Secret, error) {
+func (c *SSH) SignKey(role string, data map[string]any) (*Secret, error) {
 	r := c.c.NewRequest("PUT", fmt.Sprintf("/v1/%s/sign/%s", c.MountPoint, role))
 	if err := r.SetJSONBody(data); err != nil {
 		return nil, err

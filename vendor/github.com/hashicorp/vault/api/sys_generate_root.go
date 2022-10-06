@@ -35,7 +35,7 @@ func (c *Sys) GenerateDROperationTokenInit(otp, pgpKey string) (*GenerateRootSta
 }
 
 func (c *Sys) generateRootInitCommon(path, otp, pgpKey string) (*GenerateRootStatusResponse, error) {
-	body := map[string]interface{}{
+	body := map[string]any{
 		"otp":     otp,
 		"pgp_key": pgpKey,
 	}
@@ -87,7 +87,7 @@ func (c *Sys) GenerateDROperationTokenUpdate(shard, nonce string) (*GenerateRoot
 }
 
 func (c *Sys) generateRootUpdateCommon(path, shard, nonce string) (*GenerateRootStatusResponse, error) {
-	body := map[string]interface{}{
+	body := map[string]any{
 		"key":   shard,
 		"nonce": nonce,
 	}

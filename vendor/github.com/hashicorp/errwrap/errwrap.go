@@ -68,7 +68,7 @@ func Contains(err error, msg string) bool {
 // ContainsType checks if the given error contains an error with
 // the same concrete type as v. If err is not a wrapped error, this will
 // check the err itself.
-func ContainsType(err error, v interface{}) bool {
+func ContainsType(err error, v any) bool {
 	return len(GetAllType(err, v)) > 0
 }
 
@@ -83,7 +83,7 @@ func Get(err error, msg string) error {
 }
 
 // GetType is the same as GetAllType but returns the deepest matching error.
-func GetType(err error, v interface{}) error {
+func GetType(err error, v any) error {
 	es := GetAllType(err, v)
 	if len(es) > 0 {
 		return es[len(es)-1]
@@ -110,7 +110,7 @@ func GetAll(err error, msg string) []error {
 // GetAllType gets all the errors that are the same type as v.
 //
 // The order of the return value is the same as described in GetAll.
-func GetAllType(err error, v interface{}) []error {
+func GetAllType(err error, v any) []error {
 	var result []error
 
 	var search string

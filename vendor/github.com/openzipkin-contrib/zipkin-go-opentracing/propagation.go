@@ -23,7 +23,7 @@ type DelegatingCarrier interface {
 
 func (p *accessorPropagator) Inject(
 	spanContext opentracing.SpanContext,
-	carrier interface{},
+	carrier any,
 ) error {
 	dc, ok := carrier.(DelegatingCarrier)
 	if !ok || dc == nil {
@@ -41,7 +41,7 @@ func (p *accessorPropagator) Inject(
 }
 
 func (p *accessorPropagator) Extract(
-	carrier interface{},
+	carrier any,
 ) (opentracing.SpanContext, error) {
 	dc, ok := carrier.(DelegatingCarrier)
 	if !ok || dc == nil {

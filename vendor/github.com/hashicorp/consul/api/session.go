@@ -57,7 +57,7 @@ func (c *Client) Session() *Session {
 // CreateNoChecks is like Create but is used specifically to create
 // a session with no associated health checks.
 func (s *Session) CreateNoChecks(se *SessionEntry, q *WriteOptions) (string, *WriteMeta, error) {
-	body := make(map[string]interface{})
+	body := make(map[string]any)
 	body["NodeChecks"] = []string{}
 	if se != nil {
 		if se.Name != "" {
@@ -83,9 +83,9 @@ func (s *Session) CreateNoChecks(se *SessionEntry, q *WriteOptions) (string, *Wr
 // Create makes a new session. Providing a session entry can
 // customize the session. It can also be nil to use defaults.
 func (s *Session) Create(se *SessionEntry, q *WriteOptions) (string, *WriteMeta, error) {
-	var obj interface{}
+	var obj any
 	if se != nil {
-		body := make(map[string]interface{})
+		body := make(map[string]any)
 		obj = body
 		if se.Name != "" {
 			body["Name"] = se.Name
@@ -115,7 +115,7 @@ func (s *Session) Create(se *SessionEntry, q *WriteOptions) (string, *WriteMeta,
 	return s.create(obj, q)
 }
 
-func (s *Session) create(obj interface{}, q *WriteOptions) (string, *WriteMeta, error) {
+func (s *Session) create(obj any, q *WriteOptions) (string, *WriteMeta, error) {
 	var out struct{ ID string }
 	wm, err := s.c.write("/v1/session/create", obj, &out, q)
 	if err != nil {

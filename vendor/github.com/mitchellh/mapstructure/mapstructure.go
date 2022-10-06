@@ -9,73 +9,73 @@
 //
 // The simplest function to start with is Decode.
 //
-// Field Tags
+// # Field Tags
 //
 // When decoding to a struct, mapstructure will use the field name by
 // default to perform the mapping. For example, if a struct has a field
 // "Username" then mapstructure will look for a key in the source value
 // of "username" (case insensitive).
 //
-//     type User struct {
-//         Username string
-//     }
+//	type User struct {
+//	    Username string
+//	}
 //
 // You can change the behavior of mapstructure by using struct tags.
 // The default struct tag that mapstructure looks for is "mapstructure"
 // but you can customize it using DecoderConfig.
 //
-// Renaming Fields
+// # Renaming Fields
 //
 // To rename the key that mapstructure looks for, use the "mapstructure"
 // tag and set a value directly. For example, to change the "username" example
 // above to "user":
 //
-//     type User struct {
-//         Username string `mapstructure:"user"`
-//     }
+//	type User struct {
+//	    Username string `mapstructure:"user"`
+//	}
 //
-// Embedded Structs and Squashing
+// # Embedded Structs and Squashing
 //
 // Embedded structs are treated as if they're another field with that name.
 // By default, the two structs below are equivalent when decoding with
 // mapstructure:
 //
-//     type Person struct {
-//         Name string
-//     }
+//	type Person struct {
+//	    Name string
+//	}
 //
-//     type Friend struct {
-//         Person
-//     }
+//	type Friend struct {
+//	    Person
+//	}
 //
-//     type Friend struct {
-//         Person Person
-//     }
+//	type Friend struct {
+//	    Person Person
+//	}
 //
 // This would require an input that looks like below:
 //
-//     map[string]interface{}{
-//         "person": map[string]interface{}{"name": "alice"},
-//     }
+//	map[string]interface{}{
+//	    "person": map[string]interface{}{"name": "alice"},
+//	}
 //
 // If your "person" value is NOT nested, then you can append ",squash" to
 // your tag value and mapstructure will treat it as if the embedded struct
 // were part of the struct directly. Example:
 //
-//     type Friend struct {
-//         Person `mapstructure:",squash"`
-//     }
+//	type Friend struct {
+//	    Person `mapstructure:",squash"`
+//	}
 //
 // Now the following input would be accepted:
 //
-//     map[string]interface{}{
-//         "name": "alice",
-//     }
+//	map[string]interface{}{
+//	    "name": "alice",
+//	}
 //
 // DecoderConfig has a field that changes the behavior of mapstructure
 // to always squash embedded structs.
 //
-// Remainder Values
+// # Remainder Values
 //
 // If there are any unmapped keys in the source value, mapstructure by
 // default will silently ignore them. You can error by setting ErrorUnused
@@ -87,20 +87,20 @@
 // probably be a "map[string]interface{}" or "map[interface{}]interface{}".
 // See example below:
 //
-//     type Friend struct {
-//         Name  string
-//         Other map[string]interface{} `mapstructure:",remain"`
-//     }
+//	type Friend struct {
+//	    Name  string
+//	    Other map[string]interface{} `mapstructure:",remain"`
+//	}
 //
 // Given the input below, Other would be populated with the other
 // values that weren't used (everything but "name"):
 //
-//     map[string]interface{}{
-//         "name":    "bob",
-//         "address": "123 Maple St.",
-//     }
+//	map[string]interface{}{
+//	    "name":    "bob",
+//	    "address": "123 Maple St.",
+//	}
 //
-// Omit Empty Values
+// # Omit Empty Values
 //
 // When decoding from a struct to any other value, you may use the
 // ",omitempty" suffix on your tag to omit that value if it equates to
@@ -111,37 +111,37 @@
 // field value is zero and a numeric type, the field is empty, and it won't
 // be encoded into the destination type.
 //
-//     type Source {
-//         Age int `mapstructure:",omitempty"`
-//     }
+//	type Source {
+//	    Age int `mapstructure:",omitempty"`
+//	}
 //
-// Unexported fields
+// # Unexported fields
 //
 // Since unexported (private) struct fields cannot be set outside the package
 // where they are defined, the decoder will simply skip them.
 //
 // For this output type definition:
 //
-//     type Exported struct {
-//         private string // this unexported field will be skipped
-//         Public string
-//     }
+//	type Exported struct {
+//	    private string // this unexported field will be skipped
+//	    Public string
+//	}
 //
 // Using this map as input:
 //
-//     map[string]interface{}{
-//         "private": "I will be ignored",
-//         "Public":  "I made it through!",
-//     }
+//	map[string]interface{}{
+//	    "private": "I will be ignored",
+//	    "Public":  "I made it through!",
+//	}
 //
 // The following struct will be decoded:
 //
-//     type Exported struct {
-//         private: "" // field is left with an empty string (zero value)
-//         Public: "I made it through!"
-//     }
+//	type Exported struct {
+//	    private: "" // field is left with an empty string (zero value)
+//	    Public: "I made it through!"
+//	}
 //
-// Other Configuration
+// # Other Configuration
 //
 // mapstructure is highly configurable. See the DecoderConfig struct
 // for other features and options that are supported.
@@ -170,15 +170,15 @@ import (
 // we started with Kinds and then realized Types were the better solution,
 // but have a promise to not break backwards compat so we now support
 // both.
-type DecodeHookFunc interface{}
+type DecodeHookFunc any
 
 // DecodeHookFuncType is a DecodeHookFunc which has complete information about
 // the source and target types.
-type DecodeHookFuncType func(reflect.Type, reflect.Type, interface{}) (interface{}, error)
+type DecodeHookFuncType func(reflect.Type, reflect.Type, any) (any, error)
 
 // DecodeHookFuncKind is a DecodeHookFunc which knows only the Kinds of the
 // source and target types.
-type DecodeHookFuncKind func(reflect.Kind, reflect.Kind, interface{}) (interface{}, error)
+type DecodeHookFuncKind func(reflect.Kind, reflect.Kind, any) (any, error)
 
 // DecoderConfig is the configuration that is used to create a new decoder
 // and allows customization of various aspects of decoding.
@@ -234,7 +234,7 @@ type DecoderConfig struct {
 
 	// Result is a pointer to the struct that will contain the decoded
 	// value.
-	Result interface{}
+	Result any
 
 	// The tag name that mapstructure reads for field names. This
 	// defaults to "mapstructure"
@@ -264,7 +264,7 @@ type Metadata struct {
 
 // Decode takes an input structure and uses reflection to translate it to
 // the output structure. output must be a pointer to a map or struct.
-func Decode(input interface{}, output interface{}) error {
+func Decode(input any, output any) error {
 	config := &DecoderConfig{
 		Metadata: nil,
 		Result:   output,
@@ -280,7 +280,7 @@ func Decode(input interface{}, output interface{}) error {
 
 // WeakDecode is the same as Decode but is shorthand to enable
 // WeaklyTypedInput. See DecoderConfig for more info.
-func WeakDecode(input, output interface{}) error {
+func WeakDecode(input, output any) error {
 	config := &DecoderConfig{
 		Metadata:         nil,
 		Result:           output,
@@ -297,7 +297,7 @@ func WeakDecode(input, output interface{}) error {
 
 // DecodeMetadata is the same as Decode, but is shorthand to
 // enable metadata collection. See DecoderConfig for more info.
-func DecodeMetadata(input interface{}, output interface{}, metadata *Metadata) error {
+func DecodeMetadata(input any, output any, metadata *Metadata) error {
 	config := &DecoderConfig{
 		Metadata: metadata,
 		Result:   output,
@@ -314,7 +314,7 @@ func DecodeMetadata(input interface{}, output interface{}, metadata *Metadata) e
 // WeakDecodeMetadata is the same as Decode, but is shorthand to
 // enable both WeaklyTypedInput and metadata collection. See
 // DecoderConfig for more info.
-func WeakDecodeMetadata(input interface{}, output interface{}, metadata *Metadata) error {
+func WeakDecodeMetadata(input any, output any, metadata *Metadata) error {
 	config := &DecoderConfig{
 		Metadata:         metadata,
 		Result:           output,
@@ -366,12 +366,12 @@ func NewDecoder(config *DecoderConfig) (*Decoder, error) {
 
 // Decode decodes the given raw interface to the target pointer specified
 // by the configuration.
-func (d *Decoder) Decode(input interface{}) error {
+func (d *Decoder) Decode(input any) error {
 	return d.decode("", input, reflect.ValueOf(d.config.Result).Elem())
 }
 
 // Decodes an unknown data type into a specific reflection value.
-func (d *Decoder) decode(name string, input interface{}, outVal reflect.Value) error {
+func (d *Decoder) decode(name string, input any, outVal reflect.Value) error {
 	var inputVal reflect.Value
 	if input != nil {
 		inputVal = reflect.ValueOf(input)
@@ -461,7 +461,7 @@ func (d *Decoder) decode(name string, input interface{}, outVal reflect.Value) e
 
 // This decodes a basic type (bool, int, string, etc.) and sets the
 // value to "data" of that type.
-func (d *Decoder) decodeBasic(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeBasic(name string, data any, val reflect.Value) error {
 	if val.IsValid() && val.Elem().IsValid() {
 		elem := val.Elem()
 
@@ -517,7 +517,7 @@ func (d *Decoder) decodeBasic(name string, data interface{}, val reflect.Value) 
 	return nil
 }
 
-func (d *Decoder) decodeString(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeString(name string, data any, val reflect.Value) error {
 	dataVal := reflect.Indirect(reflect.ValueOf(data))
 	dataKind := getKind(dataVal)
 
@@ -569,7 +569,7 @@ func (d *Decoder) decodeString(name string, data interface{}, val reflect.Value)
 	return nil
 }
 
-func (d *Decoder) decodeInt(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeInt(name string, data any, val reflect.Value) error {
 	dataVal := reflect.Indirect(reflect.ValueOf(data))
 	dataKind := getKind(dataVal)
 	dataType := dataVal.Type()
@@ -611,7 +611,7 @@ func (d *Decoder) decodeInt(name string, data interface{}, val reflect.Value) er
 	return nil
 }
 
-func (d *Decoder) decodeUint(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeUint(name string, data any, val reflect.Value) error {
 	dataVal := reflect.Indirect(reflect.ValueOf(data))
 	dataKind := getKind(dataVal)
 	dataType := dataVal.Type()
@@ -667,7 +667,7 @@ func (d *Decoder) decodeUint(name string, data interface{}, val reflect.Value) e
 	return nil
 }
 
-func (d *Decoder) decodeBool(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeBool(name string, data any, val reflect.Value) error {
 	dataVal := reflect.Indirect(reflect.ValueOf(data))
 	dataKind := getKind(dataVal)
 
@@ -698,7 +698,7 @@ func (d *Decoder) decodeBool(name string, data interface{}, val reflect.Value) e
 	return nil
 }
 
-func (d *Decoder) decodeFloat(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeFloat(name string, data any, val reflect.Value) error {
 	dataVal := reflect.Indirect(reflect.ValueOf(data))
 	dataKind := getKind(dataVal)
 	dataType := dataVal.Type()
@@ -740,7 +740,7 @@ func (d *Decoder) decodeFloat(name string, data interface{}, val reflect.Value) 
 	return nil
 }
 
-func (d *Decoder) decodeMap(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeMap(name string, data any, val reflect.Value) error {
 	valType := val.Type()
 	valKeyType := valType.Key()
 	valElemType := valType.Elem()
@@ -942,7 +942,7 @@ func (d *Decoder) decodeMapFromStruct(name string, dataVal reflect.Value, val re
 	return nil
 }
 
-func (d *Decoder) decodePtr(name string, data interface{}, val reflect.Value) (bool, error) {
+func (d *Decoder) decodePtr(name string, data any, val reflect.Value) (bool, error) {
 	// If the input data is nil, then we want to just set the output
 	// pointer to be nil as well.
 	isNil := data == nil
@@ -989,7 +989,7 @@ func (d *Decoder) decodePtr(name string, data interface{}, val reflect.Value) (b
 	return false, nil
 }
 
-func (d *Decoder) decodeFunc(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeFunc(name string, data any, val reflect.Value) error {
 	// Create an element of the concrete (non pointer) type and decode
 	// into that. Then set the value of the pointer to this type.
 	dataVal := reflect.Indirect(reflect.ValueOf(data))
@@ -1002,7 +1002,7 @@ func (d *Decoder) decodeFunc(name string, data interface{}, val reflect.Value) e
 	return nil
 }
 
-func (d *Decoder) decodeSlice(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeSlice(name string, data any, val reflect.Value) error {
 	dataVal := reflect.Indirect(reflect.ValueOf(data))
 	dataValKind := dataVal.Kind()
 	valType := val.Type()
@@ -1024,7 +1024,7 @@ func (d *Decoder) decodeSlice(name string, data interface{}, val reflect.Value) 
 					return nil
 				}
 				// Create slice of maps of other sizes
-				return d.decodeSlice(name, []interface{}{data}, val)
+				return d.decodeSlice(name, []any{data}, val)
 
 			case dataValKind == reflect.String && valElemType.Kind() == reflect.Uint8:
 				return d.decodeSlice(name, []byte(dataVal.String()), val)
@@ -1033,7 +1033,7 @@ func (d *Decoder) decodeSlice(name string, data interface{}, val reflect.Value) 
 			// and "lift" it into it. i.e. a string becomes a string slice.
 			default:
 				// Just re-try this function with data as a slice.
-				return d.decodeSlice(name, []interface{}{data}, val)
+				return d.decodeSlice(name, []any{data}, val)
 			}
 		}
 
@@ -1079,7 +1079,7 @@ func (d *Decoder) decodeSlice(name string, data interface{}, val reflect.Value) 
 	return nil
 }
 
-func (d *Decoder) decodeArray(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeArray(name string, data any, val reflect.Value) error {
 	dataVal := reflect.Indirect(reflect.ValueOf(data))
 	dataValKind := dataVal.Kind()
 	valType := val.Type()
@@ -1104,7 +1104,7 @@ func (d *Decoder) decodeArray(name string, data interface{}, val reflect.Value) 
 				// and "lift" it into it. i.e. a string becomes a string array.
 				default:
 					// Just re-try this function with data as a slice.
-					return d.decodeArray(name, []interface{}{data}, val)
+					return d.decodeArray(name, []any{data}, val)
 				}
 			}
 
@@ -1146,7 +1146,7 @@ func (d *Decoder) decodeArray(name string, data interface{}, val reflect.Value) 
 	return nil
 }
 
-func (d *Decoder) decodeStruct(name string, data interface{}, val reflect.Value) error {
+func (d *Decoder) decodeStruct(name string, data any, val reflect.Value) error {
 	dataVal := reflect.Indirect(reflect.ValueOf(data))
 
 	// If the type of the value to write to and the data match directly,
@@ -1167,7 +1167,7 @@ func (d *Decoder) decodeStruct(name string, data interface{}, val reflect.Value)
 		// as an intermediary.
 
 		// Make a new map to hold our result
-		mapType := reflect.TypeOf((map[string]interface{})(nil))
+		mapType := reflect.TypeOf((map[string]any)(nil))
 		mval := reflect.MakeMap(mapType)
 
 		// Creating a pointer to a map so that other methods can completely
@@ -1198,7 +1198,7 @@ func (d *Decoder) decodeStructFromMap(name string, dataVal, val reflect.Value) e
 	}
 
 	dataValKeys := make(map[reflect.Value]struct{})
-	dataValKeysUnused := make(map[interface{}]struct{})
+	dataValKeysUnused := make(map[any]struct{})
 	for _, dataValKey := range dataVal.MapKeys() {
 		dataValKeys[dataValKey] = struct{}{}
 		dataValKeysUnused[dataValKey.Interface()] = struct{}{}
@@ -1338,7 +1338,7 @@ func (d *Decoder) decodeStructFromMap(name string, dataVal, val reflect.Value) e
 	// we put the unused keys directly into the remain field.
 	if remainField != nil && len(dataValKeysUnused) > 0 {
 		// Build a map of only the unused values
-		remain := map[interface{}]interface{}{}
+		remain := map[any]any{}
 		for key := range dataValKeysUnused {
 			remain[key] = dataVal.MapIndex(reflect.ValueOf(key)).Interface()
 		}

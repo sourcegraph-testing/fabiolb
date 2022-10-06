@@ -153,7 +153,7 @@ func file_google_rpc_status_proto_rawDescGZIP() []byte {
 }
 
 var file_google_rpc_status_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_google_rpc_status_proto_goTypes = []interface{}{
+var file_google_rpc_status_proto_goTypes = []any{
 	(*Status)(nil),  // 0: google.rpc.Status
 	(*any.Any)(nil), // 1: google.protobuf.Any
 }
@@ -172,7 +172,7 @@ func file_google_rpc_status_proto_init() {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_google_rpc_status_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_google_rpc_status_proto_msgTypes[0].Exporter = func(v any, i int) any {
 			switch v := v.(*Status); i {
 			case 0:
 				return &v.state

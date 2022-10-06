@@ -94,7 +94,7 @@ const (
 
 // Address represents a server the client connects to.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This type is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -128,7 +128,7 @@ type Address struct {
 	// to make load balancing decision.
 	//
 	// Deprecated: use Attributes instead.
-	Metadata interface{}
+	Metadata any
 }
 
 // BuildOptions includes additional information for the builder to create

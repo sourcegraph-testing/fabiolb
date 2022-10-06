@@ -223,11 +223,11 @@ func WithMaxLogsPerSpan(limit int) TracerOption {
 // NewTracer creates a new OpenTracing compatible Zipkin Tracer.
 func NewTracer(recorder SpanRecorder, options ...TracerOption) (opentracing.Tracer, error) {
 	opts := &TracerOptions{
-		recorder:             recorder,
-		shouldSample:         alwaysSample,
-		trimUnsampledSpans:   false,
-		newSpanEventListener: func() func(SpanEvent) { return nil },
-		logger:               &nopLogger{},
+		recorder:                   recorder,
+		shouldSample:               alwaysSample,
+		trimUnsampledSpans:         false,
+		newSpanEventListener:       func() func(SpanEvent) { return nil },
+		logger:                     &nopLogger{},
 		debugAssertSingleGoroutine: false,
 		debugAssertUseAfterFinish:  false,
 		clientServerSameSpan:       true,
@@ -401,7 +401,7 @@ type delegatorType struct{}
 // Delegator is the format to use for DelegatingCarrier.
 var Delegator delegatorType
 
-func (t *tracerImpl) Inject(sc opentracing.SpanContext, format interface{}, carrier interface{}) error {
+func (t *tracerImpl) Inject(sc opentracing.SpanContext, format any, carrier any) error {
 	switch format {
 	case opentracing.TextMap, opentracing.HTTPHeaders:
 		return t.textPropagator.Inject(sc, carrier)
@@ -414,7 +414,7 @@ func (t *tracerImpl) Inject(sc opentracing.SpanContext, format interface{}, carr
 	return opentracing.ErrUnsupportedFormat
 }
 
-func (t *tracerImpl) Extract(format interface{}, carrier interface{}) (opentracing.SpanContext, error) {
+func (t *tracerImpl) Extract(format any, carrier any) (opentracing.SpanContext, error) {
 	switch format {
 	case opentracing.TextMap, opentracing.HTTPHeaders:
 		return t.textPropagator.Extract(carrier)

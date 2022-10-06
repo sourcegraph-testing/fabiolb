@@ -1,3 +1,4 @@
+//go:build go1.13
 // +build go1.13
 
 package errors
@@ -28,7 +29,7 @@ func Is(err, target error) bool { return stderrors.Is(err, target) }
 //
 // As will panic if target is not a non-nil pointer to either a type that implements
 // error, or to any interface type. As returns false if err is nil.
-func As(err error, target interface{}) bool { return stderrors.As(err, target) }
+func As(err error, target any) bool { return stderrors.As(err, target) }
 
 // Unwrap returns the result of calling the Unwrap method on err, if err's
 // type contains an Unwrap method returning error.

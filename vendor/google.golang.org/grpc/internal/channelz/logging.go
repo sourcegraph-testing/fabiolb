@@ -27,7 +27,7 @@ import (
 var logger = grpclog.Component("channelz")
 
 // Info logs and adds a trace event if channelz is on.
-func Info(l grpclog.DepthLoggerV2, id int64, args ...interface{}) {
+func Info(l grpclog.DepthLoggerV2, id int64, args ...any) {
 	if IsOn() {
 		AddTraceEvent(l, id, 1, &TraceEventDesc{
 			Desc:     fmt.Sprint(args...),
@@ -39,7 +39,7 @@ func Info(l grpclog.DepthLoggerV2, id int64, args ...interface{}) {
 }
 
 // Infof logs and adds a trace event if channelz is on.
-func Infof(l grpclog.DepthLoggerV2, id int64, format string, args ...interface{}) {
+func Infof(l grpclog.DepthLoggerV2, id int64, format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
 	if IsOn() {
 		AddTraceEvent(l, id, 1, &TraceEventDesc{
@@ -52,7 +52,7 @@ func Infof(l grpclog.DepthLoggerV2, id int64, format string, args ...interface{}
 }
 
 // Warning logs and adds a trace event if channelz is on.
-func Warning(l grpclog.DepthLoggerV2, id int64, args ...interface{}) {
+func Warning(l grpclog.DepthLoggerV2, id int64, args ...any) {
 	if IsOn() {
 		AddTraceEvent(l, id, 1, &TraceEventDesc{
 			Desc:     fmt.Sprint(args...),
@@ -64,7 +64,7 @@ func Warning(l grpclog.DepthLoggerV2, id int64, args ...interface{}) {
 }
 
 // Warningf logs and adds a trace event if channelz is on.
-func Warningf(l grpclog.DepthLoggerV2, id int64, format string, args ...interface{}) {
+func Warningf(l grpclog.DepthLoggerV2, id int64, format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
 	if IsOn() {
 		AddTraceEvent(l, id, 1, &TraceEventDesc{
@@ -77,7 +77,7 @@ func Warningf(l grpclog.DepthLoggerV2, id int64, format string, args ...interfac
 }
 
 // Error logs and adds a trace event if channelz is on.
-func Error(l grpclog.DepthLoggerV2, id int64, args ...interface{}) {
+func Error(l grpclog.DepthLoggerV2, id int64, args ...any) {
 	if IsOn() {
 		AddTraceEvent(l, id, 1, &TraceEventDesc{
 			Desc:     fmt.Sprint(args...),
@@ -89,7 +89,7 @@ func Error(l grpclog.DepthLoggerV2, id int64, args ...interface{}) {
 }
 
 // Errorf logs and adds a trace event if channelz is on.
-func Errorf(l grpclog.DepthLoggerV2, id int64, format string, args ...interface{}) {
+func Errorf(l grpclog.DepthLoggerV2, id int64, format string, args ...any) {
 	msg := fmt.Sprintf(format, args...)
 	if IsOn() {
 		AddTraceEvent(l, id, 1, &TraceEventDesc{

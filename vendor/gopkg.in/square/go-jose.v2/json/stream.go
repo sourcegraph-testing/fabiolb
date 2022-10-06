@@ -40,7 +40,7 @@ func (dec *Decoder) UseNumber() { dec.d.useNumber = true }
 //
 // See the documentation for Unmarshal for details about
 // the conversion of JSON into a Go value.
-func (dec *Decoder) Decode(v interface{}) error {
+func (dec *Decoder) Decode(v any) error {
 	if dec.err != nil {
 		return dec.err
 	}
@@ -180,7 +180,7 @@ func NewEncoder(w io.Writer) *Encoder {
 //
 // See the documentation for Marshal for details about the
 // conversion of Go values to JSON.
-func (enc *Encoder) Encode(v interface{}) error {
+func (enc *Encoder) Encode(v any) error {
 	if enc.err != nil {
 		return enc.err
 	}
@@ -235,8 +235,7 @@ var _ Unmarshaler = (*RawMessage)(nil)
 //	Number, for JSON numbers
 //	string, for JSON string literals
 //	nil, for JSON null
-//
-type Token interface{}
+type Token any
 
 const (
 	tokenTopValue = iota
@@ -401,7 +400,7 @@ func (dec *Decoder) Token() (Token, error) {
 			if !dec.tokenValueAllowed() {
 				return dec.tokenError(c)
 			}
-			var x interface{}
+			var x any
 			if err := dec.Decode(&x); err != nil {
 				clearOffset(err)
 				return nil, err

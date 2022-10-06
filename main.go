@@ -665,7 +665,7 @@ func logRoutes(t route.Table, last, next, format string) {
 	}
 }
 
-func toJSON(v interface{}) string {
+func toJSON(v any) string {
 	data, err := json.MarshalIndent(v, "", "    ")
 	if err != nil {
 		panic("json: " + err.Error())

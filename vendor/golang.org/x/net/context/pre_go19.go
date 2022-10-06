@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build !go1.9
 // +build !go1.9
 
 package context
@@ -100,7 +101,7 @@ type Context interface {
 	// 		u, ok := ctx.Value(userKey).(*User)
 	// 		return u, ok
 	// 	}
-	Value(key interface{}) interface{}
+	Value(key any) any
 }
 
 // A CancelFunc tells an operation to abandon its work.

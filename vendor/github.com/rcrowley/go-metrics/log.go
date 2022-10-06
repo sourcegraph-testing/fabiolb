@@ -5,7 +5,7 @@ import (
 )
 
 type Logger interface {
-	Printf(format string, v ...interface{})
+	Printf(format string, v ...any)
 }
 
 // Log outputs each metric in the given registry periodically using the given logger.
@@ -15,15 +15,15 @@ func Log(r Registry, freq time.Duration, l Logger) {
 
 // LogOnCue outputs each metric in the given registry on demand through the channel
 // using the given logger
-func LogOnCue(r Registry, ch chan interface{}, l Logger) {
+func LogOnCue(r Registry, ch chan any, l Logger) {
 	LogScaledOnCue(r, ch, time.Nanosecond, l)
 }
 
 // LogScaled outputs each metric in the given registry periodically using the given
 // logger. Print timings in `scale` units (eg time.Millisecond) rather than nanos.
 func LogScaled(r Registry, freq time.Duration, scale time.Duration, l Logger) {
-	ch := make(chan interface{})
-	go func(channel chan interface{}) {
+	ch := make(chan any)
+	go func(channel chan any) {
 		for _ = range time.Tick(freq) {
 			channel <- struct{}{}
 		}
@@ -34,12 +34,12 @@ func LogScaled(r Registry, freq time.Duration, scale time.Duration, l Logger) {
 // LogScaledOnCue outputs each metric in the given registry on demand through the channel
 // using the given logger. Print timings in `scale` units (eg time.Millisecond) rather
 // than nanos.
-func LogScaledOnCue(r Registry, ch chan interface{}, scale time.Duration, l Logger) {
+func LogScaledOnCue(r Registry, ch chan any, scale time.Duration, l Logger) {
 	du := float64(scale)
 	duSuffix := scale.String()[1:]
 
 	for _ = range ch {
-		r.Each(func(name string, i interface{}) {
+		r.Each(func(name string, i any) {
 			switch metric := i.(type) {
 			case Counter:
 				l.Printf("counter %s\n", name)

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build go1.7
 // +build go1.7
 
 package context
@@ -53,11 +54,11 @@ func WithDeadline(parent Context, deadline time.Time) (Context, CancelFunc) {
 // Canceling this context releases resources associated with it, so code should
 // call cancel as soon as the operations running in this Context complete:
 //
-// 	func slowOperationWithTimeout(ctx context.Context) (Result, error) {
-// 		ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
-// 		defer cancel()  // releases resources if slowOperation completes before timeout elapses
-// 		return slowOperation(ctx)
-// 	}
+//	func slowOperationWithTimeout(ctx context.Context) (Result, error) {
+//		ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
+//		defer cancel()  // releases resources if slowOperation completes before timeout elapses
+//		return slowOperation(ctx)
+//	}
 func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
 	return WithDeadline(parent, time.Now().Add(timeout))
 }
@@ -67,6 +68,6 @@ func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
 //
 // Use context Values only for request-scoped data that transits processes and
 // APIs, not for passing optional parameters to functions.
-func WithValue(parent Context, key interface{}, val interface{}) Context {
+func WithValue(parent Context, key any, val any) Context {
 	return context.WithValue(parent, key, val)
 }

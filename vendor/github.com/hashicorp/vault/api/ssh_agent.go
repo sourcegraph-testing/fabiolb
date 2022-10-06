@@ -83,11 +83,10 @@ func (c *SSHHelperConfig) SetTLSParameters(clientConfig *Config, certPool *x509.
 }
 
 // Returns true if any of the following conditions are true:
-//   * CA cert is configured
-//   * CA path is configured
-//   * configured to skip certificate verification
-//   * TLS server name is configured
-//
+//   - CA cert is configured
+//   - CA path is configured
+//   - configured to skip certificate verification
+//   - TLS server name is configured
 func (c *SSHHelperConfig) shouldSetTLSParameters() bool {
 	return c.CACert != "" || c.CAPath != "" || c.TLSServerName != "" || c.TLSSkipVerify
 }
@@ -199,7 +198,7 @@ func (c *Client) SSHHelperWithMountPoint(mountPoint string) *SSHHelper {
 // an echo response message is returned. This feature is used by ssh-helper to verify if
 // its configured correctly.
 func (c *SSHHelper) Verify(otp string) (*SSHVerifyResponse, error) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"otp": otp,
 	}
 	verifyPath := fmt.Sprintf("/v1/%s/verify", c.MountPoint)

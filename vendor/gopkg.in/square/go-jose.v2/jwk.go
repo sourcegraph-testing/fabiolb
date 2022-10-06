@@ -71,7 +71,7 @@ type rawJSONWebKey struct {
 // JSONWebKey represents a public or private key in JWK format.
 type JSONWebKey struct {
 	// Cryptographic key, can be a symmetric or asymmetric key.
-	Key interface{}
+	Key any
 	// Key identifier, parsed from `kid` header.
 	KeyID string
 	// Key algorithm, parsed from `alg` header.
@@ -174,9 +174,9 @@ func (k *JSONWebKey) UnmarshalJSON(data []byte) (err error) {
 		return fmt.Errorf("square/go-jose: failed to unmarshal x5c field: %s", err)
 	}
 
-	var key interface{}
-	var certPub interface{}
-	var keyPub interface{}
+	var key any
+	var certPub any
+	var keyPub any
 
 	if len(certs) > 0 {
 		// We need to check that leaf public key matches the key embedded in this

@@ -50,20 +50,20 @@ type GraphComposite struct {
 
 // GraphDatapoint defines a datapoint
 type GraphDatapoint struct {
-	Alpha         *string     `json:"alpha,omitempty"`       // BUG: doc: floating point number, api: string
-	Axis          string      `json:"axis,omitempty"`        // string
-	CAQL          *string     `json:"caql,omitempty"`        // string or null
-	CheckID       uint        `json:"check_id,omitempty"`    // uint
-	Color         *string     `json:"color,omitempty"`       // string
-	DataFormula   *string     `json:"data_formula"`          // string or null
-	Derive        interface{} `json:"derive,omitempty"`      // BUG doc: string, api: string or boolean(for caql statements)
-	Hidden        bool        `json:"hidden"`                // boolean
-	LegendFormula *string     `json:"legend_formula"`        // string or null
-	MetricName    string      `json:"metric_name,omitempty"` // string
-	MetricType    string      `json:"metric_type,omitempty"` // string
-	Name          string      `json:"name"`                  // string
-	Search        *string     `json:"search"`                // string or null
-	Stack         *uint       `json:"stack"`                 // uint or null
+	Alpha         *string `json:"alpha,omitempty"`       // BUG: doc: floating point number, api: string
+	Axis          string  `json:"axis,omitempty"`        // string
+	CAQL          *string `json:"caql,omitempty"`        // string or null
+	CheckID       uint    `json:"check_id,omitempty"`    // uint
+	Color         *string `json:"color,omitempty"`       // string
+	DataFormula   *string `json:"data_formula"`          // string or null
+	Derive        any     `json:"derive,omitempty"`      // BUG doc: string, api: string or boolean(for caql statements)
+	Hidden        bool    `json:"hidden"`                // boolean
+	LegendFormula *string `json:"legend_formula"`        // string or null
+	MetricName    string  `json:"metric_name,omitempty"` // string
+	MetricType    string  `json:"metric_type,omitempty"` // string
+	Name          string  `json:"name"`                  // string
+	Search        *string `json:"search"`                // string or null
+	Stack         *uint   `json:"stack"`                 // uint or null
 }
 
 // GraphGuide defines a guide

@@ -172,7 +172,7 @@ func (m *CirconusMetrics) trapCall(payload []byte) (int, error) {
 		m.Log.Printf("error reading body, proceeding - %s\n", err)
 	}
 
-	var response map[string]interface{}
+	var response map[string]any
 	if err := json.Unmarshal(body, &response); err != nil {
 		m.Log.Printf("error parsing body, proceeding - %s (%s)\n", err, body)
 	}

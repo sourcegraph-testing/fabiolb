@@ -10,11 +10,11 @@ import (
 // A Valuer generates a log value. When passed to With or WithPrefix in a
 // value element (odd indexes), it represents a dynamic value which is re-
 // evaluated with each log event.
-type Valuer func() interface{}
+type Valuer func() any
 
 // bindValues replaces all value elements (odd indexes) containing a Valuer
 // with their generated value.
-func bindValues(keyvals []interface{}) {
+func bindValues(keyvals []any) {
 	for i := 1; i < len(keyvals); i += 2 {
 		if v, ok := keyvals[i].(Valuer); ok {
 			keyvals[i] = v()
@@ -24,7 +24,7 @@ func bindValues(keyvals []interface{}) {
 
 // containsValuer returns true if any of the value elements (odd indexes)
 // contain a Valuer.
-func containsValuer(keyvals []interface{}) bool {
+func containsValuer(keyvals []any) bool {
 	for i := 1; i < len(keyvals); i += 2 {
 		if _, ok := keyvals[i].(Valuer); ok {
 			return true
@@ -39,7 +39,7 @@ func containsValuer(keyvals []interface{}) bool {
 // Most users will want to use DefaultTimestamp or DefaultTimestampUTC, which
 // are TimestampFormats that use the RFC3339Nano format.
 func Timestamp(t func() time.Time) Valuer {
-	return func() interface{} { return t() }
+	return func() any { return t() }
 }
 
 // TimestampFormat returns a timestamp Valuer with a custom time format. It
@@ -50,7 +50,7 @@ func Timestamp(t func() time.Time) Valuer {
 // Most users will want to use DefaultTimestamp or DefaultTimestampUTC, which
 // are TimestampFormats that use the RFC3339Nano format.
 func TimestampFormat(t func() time.Time, layout string) Valuer {
-	return func() interface{} {
+	return func() any {
 		return timeFormat{
 			time:   t(),
 			layout: layout,
@@ -82,7 +82,7 @@ func (tf timeFormat) MarshalText() (text []byte, err error) {
 // Caller returns a Valuer that returns a file and line from a specified depth
 // in the callstack. Users will probably want to use DefaultCaller.
 func Caller(depth int) Valuer {
-	return func() interface{} {
+	return func() any {
 		_, file, line, _ := runtime.Caller(depth)
 		idx := strings.LastIndexByte(file, '/')
 		// using idx+1 below handles both of following cases:

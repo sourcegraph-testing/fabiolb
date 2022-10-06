@@ -259,12 +259,12 @@ func newProperties(t reflect.Type) *StructProperties {
 
 	// Construct a mapping of oneof field names to properties.
 	if hasOneof {
-		var oneofWrappers []interface{}
+		var oneofWrappers []any
 		if fn, ok := reflect.PtrTo(t).MethodByName("XXX_OneofFuncs"); ok {
-			oneofWrappers = fn.Func.Call([]reflect.Value{reflect.Zero(fn.Type.In(0))})[3].Interface().([]interface{})
+			oneofWrappers = fn.Func.Call([]reflect.Value{reflect.Zero(fn.Type.In(0))})[3].Interface().([]any)
 		}
 		if fn, ok := reflect.PtrTo(t).MethodByName("XXX_OneofWrappers"); ok {
-			oneofWrappers = fn.Func.Call([]reflect.Value{reflect.Zero(fn.Type.In(0))})[0].Interface().([]interface{})
+			oneofWrappers = fn.Func.Call([]reflect.Value{reflect.Zero(fn.Type.In(0))})[0].Interface().([]any)
 		}
 		if m, ok := reflect.Zero(reflect.PtrTo(t)).Interface().(protoreflect.ProtoMessage); ok {
 			if m, ok := m.ProtoReflect().(interface{ ProtoMessageInfo() *protoimpl.MessageInfo }); ok {

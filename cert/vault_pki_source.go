@@ -59,7 +59,7 @@ func (s *VaultPKISource) Issue(commonName string) (*tls.Certificate, error) {
 		return nil, fmt.Errorf("vault: client: %s", err)
 	}
 
-	resp, err := c.Logical().Write(s.CertPath, map[string]interface{}{
+	resp, err := c.Logical().Write(s.CertPath, map[string]any{
 		"common_name": commonName,
 	})
 	if err != nil {

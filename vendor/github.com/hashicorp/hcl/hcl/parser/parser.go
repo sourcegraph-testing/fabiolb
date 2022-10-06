@@ -500,7 +500,7 @@ func (p *Parser) unscan() {
 // ----------------------------------------------------------------------------
 // Parsing support
 
-func (p *Parser) printTrace(a ...interface{}) {
+func (p *Parser) printTrace(a ...any) {
 	if !p.enableTrace {
 		return
 	}

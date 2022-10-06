@@ -8,13 +8,13 @@ import (
 // WalkFn is used when walking the tree. Takes a
 // key and value, returning if iteration should
 // be terminated.
-type WalkFn func(k []byte, v interface{}) bool
+type WalkFn func(k []byte, v any) bool
 
 // leafNode is used to represent a value
 type leafNode struct {
 	mutateCh chan struct{}
 	key      []byte
-	val      interface{}
+	val      any
 }
 
 // edge is used to represent an edge node
@@ -103,7 +103,7 @@ func (n *Node) delEdge(label byte) {
 	}
 }
 
-func (n *Node) GetWatch(k []byte) (<-chan struct{}, interface{}, bool) {
+func (n *Node) GetWatch(k []byte) (<-chan struct{}, any, bool) {
 	search := k
 	watch := n.mutateCh
 	for {
@@ -134,14 +134,14 @@ func (n *Node) GetWatch(k []byte) (<-chan struct{}, interface{}, bool) {
 	return watch, nil, false
 }
 
-func (n *Node) Get(k []byte) (interface{}, bool) {
+func (n *Node) Get(k []byte) (any, bool) {
 	_, val, ok := n.GetWatch(k)
 	return val, ok
 }
 
 // LongestPrefix is like Get, but instead of an
 // exact match, it will return the longest prefix match.
-func (n *Node) LongestPrefix(k []byte) ([]byte, interface{}, bool) {
+func (n *Node) LongestPrefix(k []byte) ([]byte, any, bool) {
 	var last *leafNode
 	search := k
 	for {
@@ -175,7 +175,7 @@ func (n *Node) LongestPrefix(k []byte) ([]byte, interface{}, bool) {
 }
 
 // Minimum is used to return the minimum value in the tree
-func (n *Node) Minimum() ([]byte, interface{}, bool) {
+func (n *Node) Minimum() ([]byte, any, bool) {
 	for {
 		if n.isLeaf() {
 			return n.leaf.key, n.leaf.val, true
@@ -190,7 +190,7 @@ func (n *Node) Minimum() ([]byte, interface{}, bool) {
 }
 
 // Maximum is used to return the maximum value in the tree
-func (n *Node) Maximum() ([]byte, interface{}, bool) {
+func (n *Node) Maximum() ([]byte, any, bool) {
 	for {
 		if num := len(n.edges); num > 0 {
 			n = n.edges[num-1].node

@@ -108,7 +108,7 @@ func (e chain) Unwrap() error {
 }
 
 // As implements errors.As by attempting to map to the current value.
-func (e chain) As(target interface{}) bool {
+func (e chain) As(target any) bool {
 	return errors.As(e[0], target)
 }
 

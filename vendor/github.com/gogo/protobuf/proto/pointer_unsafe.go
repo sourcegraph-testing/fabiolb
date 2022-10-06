@@ -29,6 +29,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+//go:build !purego && !appengine && !js
 // +build !purego,!appengine,!js
 
 // This file contains the implementation of the proto field accesses using package unsafe.
@@ -85,7 +86,7 @@ func toPointer(i *Message) pointer {
 
 // toAddrPointer converts an interface to a pointer that points to
 // the interface data.
-func toAddrPointer(i *interface{}, isptr bool) pointer {
+func toAddrPointer(i *any, isptr bool) pointer {
 	// Super-tricky - read or get the address of data word of interface value.
 	if isptr {
 		// The interface is of pointer type, thus it is a direct interface.

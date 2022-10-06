@@ -61,7 +61,7 @@ const (
 var statusOK = status.New(codes.OK, "")
 var logger = grpclog.Component("core")
 
-type methodHandler func(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor UnaryServerInterceptor) (interface{}, error)
+type methodHandler func(srv any, ctx context.Context, dec func(any) error, interceptor UnaryServerInterceptor) (any, error)
 
 // MethodDesc represents an RPC service's method specification.
 type MethodDesc struct {
@@ -74,20 +74,20 @@ type ServiceDesc struct {
 	ServiceName string
 	// The pointer to the service interface. Used to check whether the user
 	// provided implementation satisfies the interface requirements.
-	HandlerType interface{}
+	HandlerType any
 	Methods     []MethodDesc
 	Streams     []StreamDesc
-	Metadata    interface{}
+	Metadata    any
 }
 
 // serviceInfo wraps information about a service. It is very similar to
 // ServiceDesc and is constructed from it for internal purposes.
 type serviceInfo struct {
 	// Contains the implementation for the methods in this service.
-	serviceImpl interface{}
+	serviceImpl any
 	methods     map[string]*MethodDesc
 	streams     map[string]*StreamDesc
-	mdata       interface{}
+	mdata       any
 }
 
 type serverWorkerData struct {
@@ -163,7 +163,7 @@ type ServerOption interface {
 // EmptyServerOption does not alter the server configuration. It can be embedded
 // in another structure to build custom server options.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This type is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -408,7 +408,7 @@ func UnknownServiceHandler(streamHandler StreamHandler) ServerOption {
 // new connections.  If this is not set, the default is 120 seconds.  A zero or
 // negative value will result in an immediate timeout.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -429,7 +429,7 @@ func MaxHeaderListSize(s uint32) ServerOption {
 // HeaderTableSize returns a ServerOption that sets the size of dynamic
 // header table for stream.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -444,7 +444,7 @@ func HeaderTableSize(s uint32) ServerOption {
 // zero (default) will disable workers and spawn a new goroutine for each
 // stream.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -538,7 +538,7 @@ func NewServer(opt ...ServerOption) *Server {
 
 // printf records an event in s's event log, unless s has been stopped.
 // REQUIRES s.mu is held.
-func (s *Server) printf(format string, a ...interface{}) {
+func (s *Server) printf(format string, a ...any) {
 	if s.events != nil {
 		s.events.Printf(format, a...)
 	}
@@ -546,7 +546,7 @@ func (s *Server) printf(format string, a ...interface{}) {
 
 // errorf records an error in s's event log, unless s has been stopped.
 // REQUIRES s.mu is held.
-func (s *Server) errorf(format string, a ...interface{}) {
+func (s *Server) errorf(format string, a ...any) {
 	if s.events != nil {
 		s.events.Errorf(format, a...)
 	}
@@ -561,14 +561,14 @@ type ServiceRegistrar interface {
 	// once the server has started serving.
 	// desc describes the service and its methods and handlers. impl is the
 	// service implementation which is passed to the method handlers.
-	RegisterService(desc *ServiceDesc, impl interface{})
+	RegisterService(desc *ServiceDesc, impl any)
 }
 
 // RegisterService registers a service and its implementation to the gRPC
 // server. It is called from the IDL generated code. This must be called before
 // invoking Serve. If ss is non-nil (for legacy code), its type is checked to
 // ensure it implements sd.HandlerType.
-func (s *Server) RegisterService(sd *ServiceDesc, ss interface{}) {
+func (s *Server) RegisterService(sd *ServiceDesc, ss any) {
 	if ss != nil {
 		ht := reflect.TypeOf(sd.HandlerType).Elem()
 		st := reflect.TypeOf(ss)
@@ -579,7 +579,7 @@ func (s *Server) RegisterService(sd *ServiceDesc, ss interface{}) {
 	s.register(sd, ss)
 }
 
-func (s *Server) register(sd *ServiceDesc, ss interface{}) {
+func (s *Server) register(sd *ServiceDesc, ss any) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.printf("RegisterService(%q)", sd.ServiceName)
@@ -620,7 +620,7 @@ type MethodInfo struct {
 type ServiceInfo struct {
 	Methods []MethodInfo
 	// Metadata is the metadata specified in ServiceDesc when registering service.
-	Metadata interface{}
+	Metadata any
 }
 
 // GetServiceInfo returns a map from service names to ServiceInfo.
@@ -895,19 +895,19 @@ var _ http.Handler = (*Server)(nil)
 // To share one port (such as 443 for https) between gRPC and an
 // existing http.Handler, use a root http.Handler such as:
 //
-//   if r.ProtoMajor == 2 && strings.HasPrefix(
-//   	r.Header.Get("Content-Type"), "application/grpc") {
-//   	grpcServer.ServeHTTP(w, r)
-//   } else {
-//   	yourMux.ServeHTTP(w, r)
-//   }
+//	if r.ProtoMajor == 2 && strings.HasPrefix(
+//		r.Header.Get("Content-Type"), "application/grpc") {
+//		grpcServer.ServeHTTP(w, r)
+//	} else {
+//		yourMux.ServeHTTP(w, r)
+//	}
 //
 // Note that ServeHTTP uses Go's HTTP/2 server implementation which is totally
 // separate from grpc-go's HTTP/2 server. Performance and features may vary
 // between the two paths. ServeHTTP does not support some gRPC features
 // available through grpc-go's HTTP/2 server.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -995,7 +995,7 @@ func (s *Server) incrCallsFailed() {
 	atomic.AddInt64(&s.czData.callsFailed, 1)
 }
 
-func (s *Server) sendResponse(t transport.ServerTransport, stream *transport.Stream, msg interface{}, cp Compressor, opts *transport.Options, comp encoding.Compressor) error {
+func (s *Server) sendResponse(t transport.ServerTransport, stream *transport.Stream, msg any, cp Compressor, opts *transport.Options, comp encoding.Compressor) error {
 	data, err := encode(s.getCodec(stream.ContentSubtype()), msg)
 	if err != nil {
 		channelz.Error(logger, s.channelzID, "grpc: server failed to encode response: ", err)
@@ -1033,7 +1033,7 @@ func chainUnaryServerInterceptors(s *Server) {
 	} else if len(interceptors) == 1 {
 		chainedInt = interceptors[0]
 	} else {
-		chainedInt = func(ctx context.Context, req interface{}, info *UnaryServerInfo, handler UnaryHandler) (interface{}, error) {
+		chainedInt = func(ctx context.Context, req any, info *UnaryServerInfo, handler UnaryHandler) (any, error) {
 			return interceptors[0](ctx, req, info, getChainUnaryHandler(interceptors, 0, info, handler))
 		}
 	}
@@ -1047,7 +1047,7 @@ func getChainUnaryHandler(interceptors []UnaryServerInterceptor, curr int, info 
 		return finalHandler
 	}
 
-	return func(ctx context.Context, req interface{}) (interface{}, error) {
+	return func(ctx context.Context, req any) (any, error) {
 		return interceptors[curr+1](ctx, req, info, getChainUnaryHandler(interceptors, curr+1, info, finalHandler))
 	}
 }
@@ -1082,7 +1082,7 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 		defer func() {
 			if trInfo != nil {
 				if err != nil && err != io.EOF {
-					trInfo.tr.LazyLog(&fmtStringer{"%v", []interface{}{err}}, true)
+					trInfo.tr.LazyLog(&fmtStringer{"%v", []any{err}}, true)
 					trInfo.tr.SetError()
 				}
 				trInfo.tr.Finish()
@@ -1183,7 +1183,7 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 	if channelz.IsOn() {
 		t.IncrMsgRecv()
 	}
-	df := func(v interface{}) error {
+	df := func(v any) error {
 		if err := s.getCodec(stream.ContentSubtype()).Unmarshal(d, v); err != nil {
 			return status.Errorf(codes.Internal, "grpc: error unmarshalling request: %v", err)
 		}
@@ -1314,7 +1314,7 @@ func chainStreamServerInterceptors(s *Server) {
 	} else if len(interceptors) == 1 {
 		chainedInt = interceptors[0]
 	} else {
-		chainedInt = func(srv interface{}, ss ServerStream, info *StreamServerInfo, handler StreamHandler) error {
+		chainedInt = func(srv any, ss ServerStream, info *StreamServerInfo, handler StreamHandler) error {
 			return interceptors[0](srv, ss, info, getChainStreamHandler(interceptors, 0, info, handler))
 		}
 	}
@@ -1328,7 +1328,7 @@ func getChainStreamHandler(interceptors []StreamServerInterceptor, curr int, inf
 		return finalHandler
 	}
 
-	return func(srv interface{}, ss ServerStream) error {
+	return func(srv any, ss ServerStream) error {
 		return interceptors[curr+1](srv, ss, info, getChainStreamHandler(interceptors, curr+1, info, finalHandler))
 	}
 }
@@ -1365,7 +1365,7 @@ func (s *Server) processStreamingRPC(t transport.ServerTransport, stream *transp
 			if trInfo != nil {
 				ss.mu.Lock()
 				if err != nil && err != io.EOF {
-					ss.trInfo.tr.LazyLog(&fmtStringer{"%v", []interface{}{err}}, true)
+					ss.trInfo.tr.LazyLog(&fmtStringer{"%v", []any{err}}, true)
 					ss.trInfo.tr.SetError()
 				}
 				ss.trInfo.tr.Finish()
@@ -1449,7 +1449,7 @@ func (s *Server) processStreamingRPC(t transport.ServerTransport, stream *transp
 		trInfo.tr.LazyLog(&trInfo.firstLine, false)
 	}
 	var appErr error
-	var server interface{}
+	var server any
 	if info != nil {
 		server = info.serviceImpl
 	}
@@ -1508,13 +1508,13 @@ func (s *Server) handleStream(t transport.ServerTransport, stream *transport.Str
 	pos := strings.LastIndex(sm, "/")
 	if pos == -1 {
 		if trInfo != nil {
-			trInfo.tr.LazyLog(&fmtStringer{"Malformed method name %q", []interface{}{sm}}, true)
+			trInfo.tr.LazyLog(&fmtStringer{"Malformed method name %q", []any{sm}}, true)
 			trInfo.tr.SetError()
 		}
 		errDesc := fmt.Sprintf("malformed method name: %q", stream.Method())
 		if err := t.WriteStatus(stream, status.New(codes.ResourceExhausted, errDesc)); err != nil {
 			if trInfo != nil {
-				trInfo.tr.LazyLog(&fmtStringer{"%v", []interface{}{err}}, true)
+				trInfo.tr.LazyLog(&fmtStringer{"%v", []any{err}}, true)
 				trInfo.tr.SetError()
 			}
 			channelz.Warningf(logger, s.channelzID, "grpc: Server.handleStream failed to write status: %v", err)
@@ -1555,7 +1555,7 @@ func (s *Server) handleStream(t transport.ServerTransport, stream *transport.Str
 	}
 	if err := t.WriteStatus(stream, status.New(codes.Unimplemented, errDesc)); err != nil {
 		if trInfo != nil {
-			trInfo.tr.LazyLog(&fmtStringer{"%v", []interface{}{err}}, true)
+			trInfo.tr.LazyLog(&fmtStringer{"%v", []any{err}}, true)
 			trInfo.tr.SetError()
 		}
 		channelz.Warningf(logger, s.channelzID, "grpc: Server.handleStream failed to write status: %v", err)
@@ -1571,7 +1571,7 @@ type streamKey struct{}
 // NewContextWithServerTransportStream creates a new context from ctx and
 // attaches stream to it.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -1586,7 +1586,7 @@ func NewContextWithServerTransportStream(ctx context.Context, stream ServerTrans
 //
 // See also NewContextWithServerTransportStream.
 //
-// Experimental
+// # Experimental
 //
 // Notice: This type is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -1601,7 +1601,7 @@ type ServerTransportStream interface {
 // ctx. Returns nil if the given context has no stream associated with it
 // (which implies it is not an RPC invocation context).
 //
-// Experimental
+// # Experimental
 //
 // Notice: This API is EXPERIMENTAL and may be changed or removed in a
 // later release.
@@ -1721,9 +1721,9 @@ func (s *Server) getCodec(contentSubtype string) baseCodec {
 // SetHeader sets the header metadata.
 // When called multiple times, all the provided metadata will be merged.
 // All the metadata will be sent out when one of the following happens:
-//  - grpc.SendHeader() is called;
-//  - The first response is sent out;
-//  - An RPC status is sent out (error or success).
+//   - grpc.SendHeader() is called;
+//   - The first response is sent out;
+//   - An RPC status is sent out (error or success).
 func SetHeader(ctx context.Context, md metadata.MD) error {
 	if md.Len() == 0 {
 		return nil

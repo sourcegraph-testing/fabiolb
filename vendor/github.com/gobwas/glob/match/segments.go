@@ -49,7 +49,7 @@ var segmentsByRuneLength [5][]int = [5][]int{
 func init() {
 	for i := cacheToAndHigher; i >= cacheFrom; i >>= 1 {
 		func(i int) {
-			segmentsPools[i-1] = sync.Pool{New: func() interface{} {
+			segmentsPools[i-1] = sync.Pool{New: func() any {
 				return make([]int, 0, i)
 			}}
 		}(i)

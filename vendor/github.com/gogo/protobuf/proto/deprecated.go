@@ -40,22 +40,22 @@ type Stats struct{ Emalloc, Dmalloc, Encode, Decode, Chit, Cmiss, Size uint64 }
 func GetStats() Stats { return Stats{} }
 
 // Deprecated: do not use.
-func MarshalMessageSet(interface{}) ([]byte, error) {
+func MarshalMessageSet(any) ([]byte, error) {
 	return nil, errors.New("proto: not implemented")
 }
 
 // Deprecated: do not use.
-func UnmarshalMessageSet([]byte, interface{}) error {
+func UnmarshalMessageSet([]byte, any) error {
 	return errors.New("proto: not implemented")
 }
 
 // Deprecated: do not use.
-func MarshalMessageSetJSON(interface{}) ([]byte, error) {
+func MarshalMessageSetJSON(any) ([]byte, error) {
 	return nil, errors.New("proto: not implemented")
 }
 
 // Deprecated: do not use.
-func UnmarshalMessageSetJSON([]byte, interface{}) error {
+func UnmarshalMessageSetJSON([]byte, any) error {
 	return errors.New("proto: not implemented")
 }
 

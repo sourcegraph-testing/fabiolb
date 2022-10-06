@@ -270,7 +270,7 @@ func AppendExtension(e Message, tag int32, buf []byte) {
 	}
 }
 
-func encodeExtension(extension *ExtensionDesc, value interface{}) ([]byte, error) {
+func encodeExtension(extension *ExtensionDesc, value any) ([]byte, error) {
 	u := getMarshalInfo(reflect.TypeOf(extension.ExtendedType))
 	ei := u.getExtElemInfo(extension)
 	v := value
@@ -280,7 +280,7 @@ func encodeExtension(extension *ExtensionDesc, value interface{}) ([]byte, error
 	return ei.marshaler(buf, p, ei.wiretag, false)
 }
 
-func decodeExtensionFromBytes(extension *ExtensionDesc, buf []byte) (interface{}, error) {
+func decodeExtensionFromBytes(extension *ExtensionDesc, buf []byte) (any, error) {
 	o := 0
 	for o < len(buf) {
 		tag, n := DecodeVarint((buf)[o:])
@@ -326,7 +326,7 @@ func (this Extension) GoString() string {
 	return fmt.Sprintf("proto.NewExtension(%#v)", this.enc)
 }
 
-func SetUnsafeExtension(pb Message, fieldNum int32, value interface{}) error {
+func SetUnsafeExtension(pb Message, fieldNum int32, value any) error {
 	typ := reflect.TypeOf(pb).Elem()
 	ext, ok := extensionMaps[typ]
 	if !ok {
@@ -339,7 +339,7 @@ func SetUnsafeExtension(pb Message, fieldNum int32, value interface{}) error {
 	return SetExtension(pb, desc, value)
 }
 
-func GetUnsafeExtension(pb Message, fieldNum int32) (interface{}, error) {
+func GetUnsafeExtension(pb Message, fieldNum int32) (any, error) {
 	typ := reflect.TypeOf(pb).Elem()
 	ext, ok := extensionMaps[typ]
 	if !ok {

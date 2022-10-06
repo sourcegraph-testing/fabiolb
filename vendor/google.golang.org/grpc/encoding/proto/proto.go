@@ -50,7 +50,7 @@ func capToMaxInt32(val int) uint32 {
 	return uint32(val)
 }
 
-func marshal(v interface{}, cb *cachedProtoBuffer) ([]byte, error) {
+func marshal(v any, cb *cachedProtoBuffer) ([]byte, error) {
 	protoMsg := v.(proto.Message)
 	newSlice := make([]byte, 0, cb.lastMarshaledSize)
 
@@ -64,7 +64,7 @@ func marshal(v interface{}, cb *cachedProtoBuffer) ([]byte, error) {
 	return out, nil
 }
 
-func (codec) Marshal(v interface{}) ([]byte, error) {
+func (codec) Marshal(v any) ([]byte, error) {
 	if pm, ok := v.(proto.Marshaler); ok {
 		// object can marshal itself, no need for buffer
 		return pm.Marshal()
@@ -79,7 +79,7 @@ func (codec) Marshal(v interface{}) ([]byte, error) {
 	return out, err
 }
 
-func (codec) Unmarshal(data []byte, v interface{}) error {
+func (codec) Unmarshal(data []byte, v any) error {
 	protoMsg := v.(proto.Message)
 	protoMsg.Reset()
 
@@ -101,7 +101,7 @@ func (codec) Name() string {
 }
 
 var protoBufferPool = &sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return &cachedProtoBuffer{
 			Buffer:            proto.Buffer{},
 			lastMarshaledSize: 16,
