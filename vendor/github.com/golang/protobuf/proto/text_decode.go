@@ -531,7 +531,7 @@ func (p *textParser) consumeOptionalSeparator() error {
 	return nil
 }
 
-func (p *textParser) errorf(format string, a ...interface{}) *ParseError {
+func (p *textParser) errorf(format string, a ...any) *ParseError {
 	pe := &ParseError{fmt.Sprintf(format, a...), p.cur.line, p.cur.offset}
 	p.cur.err = pe
 	p.done = true

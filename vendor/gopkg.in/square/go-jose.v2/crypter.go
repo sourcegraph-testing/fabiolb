@@ -63,7 +63,7 @@ type genericEncrypter struct {
 	cipher         contentCipher
 	recipients     []recipientKeyInfo
 	keyGenerator   keyGenerator
-	extraHeaders   map[HeaderKey]interface{}
+	extraHeaders   map[HeaderKey]any
 }
 
 type recipientKeyInfo struct {
@@ -79,14 +79,14 @@ type EncrypterOptions struct {
 	// Optional map of additional keys to be inserted into the protected header
 	// of a JWS object. Some specifications which make use of JWS like to insert
 	// additional values here. All values must be JSON-serializable.
-	ExtraHeaders map[HeaderKey]interface{}
+	ExtraHeaders map[HeaderKey]any
 }
 
 // WithHeader adds an arbitrary value to the ExtraHeaders map, initializing it
 // if necessary. It returns itself and so can be used in a fluent style.
-func (eo *EncrypterOptions) WithHeader(k HeaderKey, v interface{}) *EncrypterOptions {
+func (eo *EncrypterOptions) WithHeader(k HeaderKey, v any) *EncrypterOptions {
 	if eo.ExtraHeaders == nil {
-		eo.ExtraHeaders = map[HeaderKey]interface{}{}
+		eo.ExtraHeaders = map[HeaderKey]any{}
 	}
 	eo.ExtraHeaders[k] = v
 	return eo
@@ -112,7 +112,7 @@ func (eo *EncrypterOptions) WithType(typ ContentType) *EncrypterOptions {
 // be generated.
 type Recipient struct {
 	Algorithm  KeyAlgorithm
-	Key        interface{}
+	Key        any
 	KeyID      string
 	PBES2Count int
 	PBES2Salt  []byte
@@ -135,7 +135,7 @@ func NewEncrypter(enc ContentEncryption, rcpt Recipient, opts *EncrypterOptions)
 	}
 
 	var keyID string
-	var rawKey interface{}
+	var rawKey any
 	switch encryptionKey := rcpt.Key.(type) {
 	case JSONWebKey:
 		keyID, rawKey = encryptionKey.KeyID, encryptionKey.Key
@@ -255,7 +255,7 @@ func (ctx *genericEncrypter) addRecipient(recipient Recipient) (err error) {
 	return err
 }
 
-func makeJWERecipient(alg KeyAlgorithm, encryptionKey interface{}) (recipientKeyInfo, error) {
+func makeJWERecipient(alg KeyAlgorithm, encryptionKey any) (recipientKeyInfo, error) {
 	switch encryptionKey := encryptionKey.(type) {
 	case *rsa.PublicKey:
 		return newRSARecipient(alg, encryptionKey)
@@ -277,7 +277,7 @@ func makeJWERecipient(alg KeyAlgorithm, encryptionKey interface{}) (recipientKey
 }
 
 // newDecrypter creates an appropriate decrypter based on the key type
-func newDecrypter(decryptionKey interface{}) (keyDecrypter, error) {
+func newDecrypter(decryptionKey any) (keyDecrypter, error) {
 	switch decryptionKey := decryptionKey.(type) {
 	case *rsa.PrivateKey:
 		return &rsaDecrypterSigner{
@@ -405,7 +405,7 @@ func (ctx *genericEncrypter) Options() EncrypterOptions {
 // Decrypt and validate the object and return the plaintext. Note that this
 // function does not support multi-recipient, if you desire multi-recipient
 // decryption use DecryptMulti instead.
-func (obj JSONWebEncryption) Decrypt(decryptionKey interface{}) ([]byte, error) {
+func (obj JSONWebEncryption) Decrypt(decryptionKey any) ([]byte, error) {
 	headers := obj.mergedHeaders(nil)
 
 	if len(obj.recipients) > 1 {
@@ -469,7 +469,7 @@ func (obj JSONWebEncryption) Decrypt(decryptionKey interface{}) ([]byte, error) 
 // with support for multiple recipients. It returns the index of the recipient
 // for which the decryption was successful, the merged headers for that recipient,
 // and the plaintext.
-func (obj JSONWebEncryption) DecryptMulti(decryptionKey interface{}) (int, Header, []byte, error) {
+func (obj JSONWebEncryption) DecryptMulti(decryptionKey any) (int, Header, []byte, error) {
 	globalHeaders := obj.mergedHeaders(nil)
 
 	critical, err := globalHeaders.getCritical()

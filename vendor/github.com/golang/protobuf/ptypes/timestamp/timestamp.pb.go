@@ -30,7 +30,7 @@ var file_github_com_golang_protobuf_ptypes_timestamp_timestamp_proto_rawDesc = [
 	0x33,
 }
 
-var file_github_com_golang_protobuf_ptypes_timestamp_timestamp_proto_goTypes = []interface{}{}
+var file_github_com_golang_protobuf_ptypes_timestamp_timestamp_proto_goTypes = []any{}
 var file_github_com_golang_protobuf_ptypes_timestamp_timestamp_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type

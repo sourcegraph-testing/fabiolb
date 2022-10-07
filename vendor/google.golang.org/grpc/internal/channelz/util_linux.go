@@ -1,3 +1,4 @@
+//go:build linux && !appengine
 // +build linux,!appengine
 
 /*
@@ -25,7 +26,7 @@ import (
 )
 
 // GetSocketOption gets the socket option info of the conn.
-func GetSocketOption(socket interface{}) *SocketOptionData {
+func GetSocketOption(socket any) *SocketOptionData {
 	c, ok := socket.(syscall.Conn)
 	if !ok {
 		return nil

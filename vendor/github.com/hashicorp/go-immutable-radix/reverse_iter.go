@@ -139,7 +139,7 @@ func (ri *ReverseIterator) SeekReverseLowerBound(key []byte) {
 }
 
 // Previous returns the previous node in reverse order
-func (ri *ReverseIterator) Previous() ([]byte, interface{}, bool) {
+func (ri *ReverseIterator) Previous() ([]byte, any, bool) {
 	// Initialize our stack if needed
 	if ri.i.stack == nil && ri.i.node != nil {
 		ri.i.stack = []edges{

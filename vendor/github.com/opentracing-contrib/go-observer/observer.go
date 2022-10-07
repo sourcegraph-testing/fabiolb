@@ -10,7 +10,6 @@ import opentracing "github.com/opentracing/opentracing-go"
 // like the below e.g :
 // observer := myobserver.NewObserver()
 // tracer := client.NewTracer(..., client.WithObserver(observer))
-//
 type Observer interface {
 	// Create and return a span observer. Called when a span starts.
 	// If the Observer is not interested in the given span, it must return (nil, false).
@@ -33,7 +32,7 @@ type SpanObserver interface {
 	// Callback called from opentracing.Span.SetOperationName()
 	OnSetOperationName(operationName string)
 	// Callback called from opentracing.Span.SetTag()
-	OnSetTag(key string, value interface{})
+	OnSetTag(key string, value any)
 	// Callback called from opentracing.Span.Finish()
 	OnFinish(options opentracing.FinishOptions)
 }

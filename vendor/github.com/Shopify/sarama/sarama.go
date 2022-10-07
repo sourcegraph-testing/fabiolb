@@ -60,7 +60,6 @@ Producer related metrics:
 	| compression-ratio                         | histogram  | Distribution of the compression ratio times 100 of record batches for all topics     |
 	| compression-ratio-for-topic-<topic>       | histogram  | Distribution of the compression ratio times 100 of record batches for a given topic  |
 	+-------------------------------------------+------------+--------------------------------------------------------------------------------------+
-
 */
 package sarama
 
@@ -76,14 +75,14 @@ var Logger StdLogger = log.New(ioutil.Discard, "[Sarama] ", log.LstdFlags)
 
 // StdLogger is used to log error messages.
 type StdLogger interface {
-	Print(v ...interface{})
-	Printf(format string, v ...interface{})
-	Println(v ...interface{})
+	Print(v ...any)
+	Printf(format string, v ...any)
+	Println(v ...any)
 }
 
 // PanicHandler is called for recovering from panics spawned internally to the library (and thus
 // not recoverable by the caller's goroutine). Defaults to nil, which means panics are not recovered.
-var PanicHandler func(interface{})
+var PanicHandler func(any)
 
 // MaxRequestSize is the maximum size (in bytes) of any request that Sarama will attempt to send. Trying
 // to send a request larger than this will result in an PacketEncodingError. The default of 100 MiB is aligned

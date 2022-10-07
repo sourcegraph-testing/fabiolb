@@ -19,7 +19,7 @@ func (l *logfmtEncoder) Reset() {
 }
 
 var logfmtEncoderPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		var enc logfmtEncoder
 		enc.Encoder = logfmt.NewEncoder(&enc.buf)
 		return &enc
@@ -38,7 +38,7 @@ func NewLogfmtLogger(w io.Writer) Logger {
 	return &logfmtLogger{w}
 }
 
-func (l logfmtLogger) Log(keyvals ...interface{}) error {
+func (l logfmtLogger) Log(keyvals ...any) error {
 	enc := logfmtEncoderPool.Get().(*logfmtEncoder)
 	enc.Reset()
 	defer logfmtEncoderPool.Put(enc)

@@ -104,7 +104,7 @@ func (ml fieldsAsMap) EmitFloat64(key string, value float64) {
 	ml[key] = fmt.Sprintf("%f", value)
 }
 
-func (ml fieldsAsMap) EmitObject(key string, value interface{}) {
+func (ml fieldsAsMap) EmitObject(key string, value any) {
 	ml[key] = fmt.Sprintf("%+v", value)
 }
 

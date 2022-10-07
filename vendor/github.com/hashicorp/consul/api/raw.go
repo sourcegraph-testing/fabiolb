@@ -13,12 +13,12 @@ func (c *Client) Raw() *Raw {
 // Query is used to do a GET request against an endpoint
 // and deserialize the response into an interface using
 // standard Consul conventions.
-func (raw *Raw) Query(endpoint string, out interface{}, q *QueryOptions) (*QueryMeta, error) {
+func (raw *Raw) Query(endpoint string, out any, q *QueryOptions) (*QueryMeta, error) {
 	return raw.c.query(endpoint, out, q)
 }
 
 // Write is used to do a PUT request against an endpoint
 // and serialize/deserialized using the standard Consul conventions.
-func (raw *Raw) Write(endpoint string, in, out interface{}, q *WriteOptions) (*WriteMeta, error) {
+func (raw *Raw) Write(endpoint string, in, out any, q *WriteOptions) (*WriteMeta, error) {
 	return raw.c.write(endpoint, in, out, q)
 }

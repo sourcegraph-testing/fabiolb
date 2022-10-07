@@ -401,10 +401,10 @@ func GetProperties(t reflect.Type) *StructProperties {
 
 type (
 	oneofFuncsIface interface {
-		XXX_OneofFuncs() (func(Message, *Buffer) error, func(Message, int, int, *Buffer) (bool, error), func(Message) int, []interface{})
+		XXX_OneofFuncs() (func(Message, *Buffer) error, func(Message, int, int, *Buffer) (bool, error), func(Message) int, []any)
 	}
 	oneofWrappersIface interface {
-		XXX_OneofWrappers() []interface{}
+		XXX_OneofWrappers() []any
 	}
 )
 
@@ -450,7 +450,7 @@ func getPropertiesLocked(t reflect.Type) *StructProperties {
 	sort.Sort(prop)
 
 	if isOneofMessage {
-		var oots []interface{}
+		var oots []any
 		switch m := reflect.Zero(reflect.PtrTo(t)).Interface().(type) {
 		case oneofFuncsIface:
 			_, _, _, oots = m.XXX_OneofFuncs()
@@ -561,7 +561,7 @@ func RegisterType(x Message, name string) {
 
 // RegisterMapType is called from generated code and maps from the fully qualified
 // proto name to the native map type of the proto map definition.
-func RegisterMapType(x interface{}, name string) {
+func RegisterMapType(x any, name string) {
 	if reflect.TypeOf(x).Kind() != reflect.Map {
 		panic(fmt.Sprintf("RegisterMapType(%T, %q); want map", x, name))
 	}

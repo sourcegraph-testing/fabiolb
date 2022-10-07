@@ -15,7 +15,7 @@ type CAConfig struct {
 	// Configuration is arbitrary configuration for the provider. This
 	// should only contain primitive values and containers (such as lists
 	// and maps).
-	Config map[string]interface{}
+	Config map[string]any
 
 	// State is read-only data that the provider might have persisted for use
 	// after restart or leadership transition. For example this might include
@@ -47,7 +47,7 @@ type ConsulCAProviderConfig struct {
 
 // ParseConsulCAConfig takes a raw config map and returns a parsed
 // ConsulCAProviderConfig.
-func ParseConsulCAConfig(raw map[string]interface{}) (*ConsulCAProviderConfig, error) {
+func ParseConsulCAConfig(raw map[string]any) (*ConsulCAProviderConfig, error) {
 	var config ConsulCAProviderConfig
 	decodeConf := &mapstructure.DecoderConfig{
 		DecodeHook:       mapstructure.StringToTimeDurationHookFunc(),

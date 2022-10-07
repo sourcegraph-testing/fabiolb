@@ -12,34 +12,34 @@ import "github.com/pkg/errors"
 // free memory).
 
 // GaugeWithTags sets a gauge metric with tags to a value
-func (m *CirconusMetrics) GaugeWithTags(metric string, tags Tags, val interface{}) {
+func (m *CirconusMetrics) GaugeWithTags(metric string, tags Tags, val any) {
 	m.SetGaugeWithTags(metric, tags, val)
 }
 
 // Gauge sets a gauge to a value
-func (m *CirconusMetrics) Gauge(metric string, val interface{}) {
+func (m *CirconusMetrics) Gauge(metric string, val any) {
 	m.SetGauge(metric, val)
 }
 
 // SetGaugeWithTags sets a gauge metric with tags to a value
-func (m *CirconusMetrics) SetGaugeWithTags(metric string, tags Tags, val interface{}) {
+func (m *CirconusMetrics) SetGaugeWithTags(metric string, tags Tags, val any) {
 	m.SetGauge(m.MetricNameWithStreamTags(metric, tags), val)
 }
 
 // SetGauge sets a gauge to a value
-func (m *CirconusMetrics) SetGauge(metric string, val interface{}) {
+func (m *CirconusMetrics) SetGauge(metric string, val any) {
 	m.gm.Lock()
 	defer m.gm.Unlock()
 	m.gauges[metric] = val
 }
 
 // AddGaugeWithTags adds value to existing gauge metric with tags
-func (m *CirconusMetrics) AddGaugeWithTags(metric string, tags Tags, val interface{}) {
+func (m *CirconusMetrics) AddGaugeWithTags(metric string, tags Tags, val any) {
 	m.AddGauge(m.MetricNameWithStreamTags(metric, tags), val)
 }
 
 // AddGauge adds value to existing gauge
-func (m *CirconusMetrics) AddGauge(metric string, val interface{}) {
+func (m *CirconusMetrics) AddGauge(metric string, val any) {
 	m.gm.Lock()
 	defer m.gm.Unlock()
 
@@ -92,7 +92,7 @@ func (m *CirconusMetrics) RemoveGauge(metric string) {
 }
 
 // GetGaugeTest returns the current value for a gauge. (note: it is a function specifically for "testing", disable automatic submission during testing.)
-func (m *CirconusMetrics) GetGaugeTest(metric string) (interface{}, error) {
+func (m *CirconusMetrics) GetGaugeTest(metric string) (any, error) {
 	m.gm.Lock()
 	defer m.gm.Unlock()
 
@@ -128,7 +128,7 @@ func (m *CirconusMetrics) RemoveGaugeFunc(metric string) {
 }
 
 // getGaugeType returns accurate resmon type for underlying type of gauge value
-func (m *CirconusMetrics) getGaugeType(v interface{}) string {
+func (m *CirconusMetrics) getGaugeType(v any) string {
 	mt := "n"
 	switch v.(type) {
 	case int:

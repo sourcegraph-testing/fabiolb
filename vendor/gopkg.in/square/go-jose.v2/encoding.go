@@ -31,7 +31,7 @@ import (
 
 // Helper function to serialize known-good objects.
 // Precondition: value is not a nil pointer.
-func mustSerializeJSON(value interface{}) []byte {
+func mustSerializeJSON(value any) []byte {
 	out, err := json.Marshal(value)
 	if err != nil {
 		panic(err)

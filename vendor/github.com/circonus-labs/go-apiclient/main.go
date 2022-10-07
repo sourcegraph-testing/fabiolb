@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build go1.13
 // +build go1.13
 
 package apiclient
@@ -51,7 +52,7 @@ const (
 // Logger facilitates use of any logger supporting the required methods
 // rather than just standard log package log.Logger
 type Logger interface {
-	Printf(string, ...interface{})
+	Printf(string, ...any)
 }
 
 // TokenKeyType - Circonus API Token key

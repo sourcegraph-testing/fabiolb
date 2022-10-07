@@ -111,14 +111,14 @@ type AgentServiceConnect struct {
 // AgentServiceConnectProxyConfig is the proxy configuration in a connect-proxy
 // ServiceDefinition or response.
 type AgentServiceConnectProxyConfig struct {
-	DestinationServiceName string                 `json:",omitempty"`
-	DestinationServiceID   string                 `json:",omitempty"`
-	LocalServiceAddress    string                 `json:",omitempty"`
-	LocalServicePort       int                    `json:",omitempty"`
-	Config                 map[string]interface{} `json:",omitempty" bexpr:"-"`
-	Upstreams              []Upstream             `json:",omitempty"`
-	MeshGateway            MeshGatewayConfig      `json:",omitempty"`
-	Expose                 ExposeConfig           `json:",omitempty"`
+	DestinationServiceName string            `json:",omitempty"`
+	DestinationServiceID   string            `json:",omitempty"`
+	LocalServiceAddress    string            `json:",omitempty"`
+	LocalServicePort       int               `json:",omitempty"`
+	Config                 map[string]any    `json:",omitempty" bexpr:"-"`
+	Upstreams              []Upstream        `json:",omitempty"`
+	MeshGateway            MeshGatewayConfig `json:",omitempty"`
+	Expose                 ExposeConfig      `json:",omitempty"`
 }
 
 const (
@@ -256,7 +256,7 @@ type AgentServiceRegistration struct {
 	Namespace         string                          `json:",omitempty" bexpr:"-" hash:"ignore"`
 }
 
-//ServiceRegisterOpts is used to pass extra options to the service register.
+// ServiceRegisterOpts is used to pass extra options to the service register.
 type ServiceRegisterOpts struct {
 	//Missing healthchecks will be deleted from the agent.
 	//Using this parameter allows to idempotently register a service and its checks without
@@ -370,7 +370,7 @@ type ConnectProxyConfig struct {
 	TargetServiceID   string
 	TargetServiceName string
 	ContentHash       string
-	Config            map[string]interface{} `bexpr:"-"`
+	Config            map[string]any `bexpr:"-"`
 	Upstreams         []Upstream
 }
 
@@ -379,11 +379,11 @@ type Upstream struct {
 	DestinationType      UpstreamDestType `json:",omitempty"`
 	DestinationNamespace string           `json:",omitempty"`
 	DestinationName      string
-	Datacenter           string                 `json:",omitempty"`
-	LocalBindAddress     string                 `json:",omitempty"`
-	LocalBindPort        int                    `json:",omitempty"`
-	Config               map[string]interface{} `json:",omitempty" bexpr:"-"`
-	MeshGateway          MeshGatewayConfig      `json:",omitempty"`
+	Datacenter           string            `json:",omitempty"`
+	LocalBindAddress     string            `json:",omitempty"`
+	LocalBindPort        int               `json:",omitempty"`
+	Config               map[string]any    `json:",omitempty" bexpr:"-"`
+	MeshGateway          MeshGatewayConfig `json:",omitempty"`
 }
 
 // Agent can be used to query the Agent endpoints
@@ -401,7 +401,7 @@ func (c *Client) Agent() *Agent {
 
 // Self is used to query the agent we are speaking to for
 // information about itself
-func (a *Agent) Self() (map[string]map[string]interface{}, error) {
+func (a *Agent) Self() (map[string]map[string]any, error) {
 	r := a.c.newRequest("GET", "/v1/agent/self")
 	_, resp, err := requireOK(a.c.doRequest(r))
 	if err != nil {
@@ -409,7 +409,7 @@ func (a *Agent) Self() (map[string]map[string]interface{}, error) {
 	}
 	defer resp.Body.Close()
 
-	var out map[string]map[string]interface{}
+	var out map[string]map[string]any
 	if err := decodeBody(resp, &out); err != nil {
 		return nil, err
 	}
@@ -419,7 +419,7 @@ func (a *Agent) Self() (map[string]map[string]interface{}, error) {
 // Host is used to retrieve information about the host the
 // agent is running on such as CPU, memory, and disk. Requires
 // a operator:read ACL token.
-func (a *Agent) Host() (map[string]interface{}, error) {
+func (a *Agent) Host() (map[string]any, error) {
 	r := a.c.newRequest("GET", "/v1/agent/host")
 	_, resp, err := requireOK(a.c.doRequest(r))
 	if err != nil {
@@ -427,7 +427,7 @@ func (a *Agent) Host() (map[string]interface{}, error) {
 	}
 	defer resp.Body.Close()
 
-	var out map[string]interface{}
+	var out map[string]any
 	if err := decodeBody(resp, &out); err != nil {
 		return nil, err
 	}
@@ -863,8 +863,8 @@ func (a *Agent) ForceLeave(node string) error {
 	return nil
 }
 
-//ForceLeavePrune is used to have an a failed agent removed
-//from the list of members
+// ForceLeavePrune is used to have an a failed agent removed
+// from the list of members
 func (a *Agent) ForceLeavePrune(node string) error {
 	r := a.c.newRequest("PUT", "/v1/agent/force-leave/"+node)
 	r.params.Set("prune", "1")

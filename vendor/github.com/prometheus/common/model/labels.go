@@ -105,7 +105,7 @@ func (ln LabelName) IsValid() bool {
 }
 
 // UnmarshalYAML implements the yaml.Unmarshaler interface.
-func (ln *LabelName) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (ln *LabelName) UnmarshalYAML(unmarshal func(any) error) error {
 	var s string
 	if err := unmarshal(&s); err != nil {
 		return err

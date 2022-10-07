@@ -11,8 +11,8 @@ import (
 func New() *MockTracer {
 	t := &MockTracer{
 		finishedSpans: []*MockSpan{},
-		injectors:     make(map[interface{}]Injector),
-		extractors:    make(map[interface{}]Extractor),
+		injectors:     make(map[any]Injector),
+		extractors:    make(map[any]Extractor),
 	}
 
 	// register default injectors/extractors
@@ -34,8 +34,8 @@ func New() *MockTracer {
 type MockTracer struct {
 	sync.RWMutex
 	finishedSpans []*MockSpan
-	injectors     map[interface{}]Injector
-	extractors    map[interface{}]Extractor
+	injectors     map[any]Injector
+	extractors    map[any]Extractor
 }
 
 // FinishedSpans returns all spans that have been Finish()'ed since the
@@ -67,17 +67,17 @@ func (t *MockTracer) StartSpan(operationName string, opts ...opentracing.StartSp
 }
 
 // RegisterInjector registers injector for given format
-func (t *MockTracer) RegisterInjector(format interface{}, injector Injector) {
+func (t *MockTracer) RegisterInjector(format any, injector Injector) {
 	t.injectors[format] = injector
 }
 
 // RegisterExtractor registers extractor for given format
-func (t *MockTracer) RegisterExtractor(format interface{}, extractor Extractor) {
+func (t *MockTracer) RegisterExtractor(format any, extractor Extractor) {
 	t.extractors[format] = extractor
 }
 
 // Inject belongs to the Tracer interface.
-func (t *MockTracer) Inject(sm opentracing.SpanContext, format interface{}, carrier interface{}) error {
+func (t *MockTracer) Inject(sm opentracing.SpanContext, format any, carrier any) error {
 	spanContext, ok := sm.(MockSpanContext)
 	if !ok {
 		return opentracing.ErrInvalidSpanContext
@@ -90,7 +90,7 @@ func (t *MockTracer) Inject(sm opentracing.SpanContext, format interface{}, carr
 }
 
 // Extract belongs to the Tracer interface.
-func (t *MockTracer) Extract(format interface{}, carrier interface{}) (opentracing.SpanContext, error) {
+func (t *MockTracer) Extract(format any, carrier any) (opentracing.SpanContext, error) {
 	extractor, ok := t.extractors[format]
 	if !ok {
 		return nil, opentracing.ErrUnsupportedFormat

@@ -198,7 +198,7 @@ func aberrantLoadMessageDescReentrant(t reflect.Type, name pref.FullName) pref.M
 	for _, method := range []string{"XXX_OneofFuncs", "XXX_OneofWrappers"} {
 		if fn, ok := t.MethodByName(method); ok {
 			for _, v := range fn.Func.Call([]reflect.Value{reflect.Zero(fn.Type.In(0))}) {
-				if vs, ok := v.Interface().([]interface{}); ok {
+				if vs, ok := v.Interface().([]any); ok {
 					for _, v := range vs {
 						oneofWrappers = append(oneofWrappers, reflect.TypeOf(v))
 					}
@@ -497,6 +497,6 @@ func (m aberrantMessage) IsValid() bool {
 func (m aberrantMessage) ProtoMethods() *piface.Methods {
 	return legacyProtoMethods
 }
-func (m aberrantMessage) protoUnwrap() interface{} {
+func (m aberrantMessage) protoUnwrap() any {
 	return m.v.Interface()
 }

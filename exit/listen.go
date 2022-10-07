@@ -68,13 +68,13 @@ func Exit(code int) {
 // Fatal is a replacement for log.Fatal which will trigger
 // the closure of all registered exit handlers and waits
 // for their completion and then call os.Exit(1).
-func Fatal(v ...interface{}) {
+func Fatal(v ...any) {
 	log.Print(v...)
 	Exit(1)
 }
 
 // Fatalf is a replacement for log.Fatalf and behaves like Fatal.
-func Fatalf(format string, v ...interface{}) {
+func Fatalf(format string, v ...any) {
 	log.Printf(format, v...)
 	Exit(1)
 }

@@ -38,7 +38,7 @@ type spanImpl struct {
 	Endpoint       *zipkincore.Endpoint
 }
 
-var spanPool = &sync.Pool{New: func() interface{} {
+var spanPool = &sync.Pool{New: func() any {
 	return &spanImpl{}
 }}
 
@@ -78,7 +78,7 @@ func (s *spanImpl) trim() bool {
 	return !s.raw.Context.Sampled && s.tracer.options.trimUnsampledSpans
 }
 
-func (s *spanImpl) SetTag(key string, value interface{}) opentracing.Span {
+func (s *spanImpl) SetTag(key string, value any) opentracing.Span {
 	defer s.onTag(key, value)
 	if s.observer != nil {
 		s.observer.OnSetTag(key, value)
@@ -103,7 +103,7 @@ func (s *spanImpl) SetTag(key string, value interface{}) opentracing.Span {
 	return s
 }
 
-func (s *spanImpl) LogKV(keyValues ...interface{}) {
+func (s *spanImpl) LogKV(keyValues ...any) {
 	fields, err := log.InterleavedKVToFields(keyValues...)
 	if err != nil {
 		s.LogFields(log.Error(err), log.String("function", "LogKV"))
@@ -149,7 +149,7 @@ func (s *spanImpl) LogEvent(event string) {
 	})
 }
 
-func (s *spanImpl) LogEventWithPayload(event string, payload interface{}) {
+func (s *spanImpl) LogEventWithPayload(event string, payload any) {
 	s.Log(opentracing.LogData{
 		Event:   event,
 		Payload: payload,

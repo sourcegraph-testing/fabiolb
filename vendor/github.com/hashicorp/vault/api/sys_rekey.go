@@ -158,7 +158,7 @@ func (c *Sys) RekeyRecoveryKeyVerificationCancel() error {
 }
 
 func (c *Sys) RekeyUpdate(shard, nonce string) (*RekeyUpdateResponse, error) {
-	body := map[string]interface{}{
+	body := map[string]any{
 		"key":   shard,
 		"nonce": nonce,
 	}
@@ -182,7 +182,7 @@ func (c *Sys) RekeyUpdate(shard, nonce string) (*RekeyUpdateResponse, error) {
 }
 
 func (c *Sys) RekeyRecoveryKeyUpdate(shard, nonce string) (*RekeyUpdateResponse, error) {
-	body := map[string]interface{}{
+	body := map[string]any{
 		"key":   shard,
 		"nonce": nonce,
 	}
@@ -288,7 +288,7 @@ func (c *Sys) RekeyDeleteRecoveryBackup() error {
 }
 
 func (c *Sys) RekeyVerificationUpdate(shard, nonce string) (*RekeyVerificationUpdateResponse, error) {
-	body := map[string]interface{}{
+	body := map[string]any{
 		"key":   shard,
 		"nonce": nonce,
 	}
@@ -312,7 +312,7 @@ func (c *Sys) RekeyVerificationUpdate(shard, nonce string) (*RekeyVerificationUp
 }
 
 func (c *Sys) RekeyRecoveryKeyVerificationUpdate(shard, nonce string) (*RekeyVerificationUpdateResponse, error) {
-	body := map[string]interface{}{
+	body := map[string]any{
 		"key":   shard,
 		"nonce": nonce,
 	}

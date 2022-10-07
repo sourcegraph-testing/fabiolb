@@ -69,7 +69,7 @@ type MockSpan struct {
 
 	// All of the below are protected by the embedded RWMutex.
 	SpanContext MockSpanContext
-	tags        map[string]interface{}
+	tags        map[string]any
 	logs        []MockLogRecord
 	tracer      *MockTracer
 }
@@ -77,7 +77,7 @@ type MockSpan struct {
 func newMockSpan(t *MockTracer, name string, opts opentracing.StartSpanOptions) *MockSpan {
 	tags := opts.Tags
 	if tags == nil {
-		tags = map[string]interface{}{}
+		tags = map[string]any{}
 	}
 	traceID := nextMockID()
 	parentID := int(0)
@@ -107,10 +107,10 @@ func newMockSpan(t *MockTracer, name string, opts opentracing.StartSpanOptions) 
 }
 
 // Tags returns a copy of tags accumulated by the span so far
-func (s *MockSpan) Tags() map[string]interface{} {
+func (s *MockSpan) Tags() map[string]any {
 	s.RLock()
 	defer s.RUnlock()
-	tags := make(map[string]interface{})
+	tags := make(map[string]any)
 	for k, v := range s.tags {
 		tags[k] = v
 	}
@@ -118,7 +118,7 @@ func (s *MockSpan) Tags() map[string]interface{} {
 }
 
 // Tag returns a single tag
-func (s *MockSpan) Tag(k string) interface{} {
+func (s *MockSpan) Tag(k string) any {
 	s.RLock()
 	defer s.RUnlock()
 	return s.tags[k]
@@ -141,7 +141,7 @@ func (s *MockSpan) Context() opentracing.SpanContext {
 }
 
 // SetTag belongs to the Span interface
-func (s *MockSpan) SetTag(key string, value interface{}) opentracing.Span {
+func (s *MockSpan) SetTag(key string, value any) opentracing.Span {
 	s.Lock()
 	defer s.Unlock()
 	if key == string(ext.SamplingPriority) {
@@ -242,7 +242,7 @@ func (s *MockSpan) logFieldsWithTimestamp(ts time.Time, fields ...log.Field) {
 // This implementations coerces all "values" to strings, though that is not
 // something all implementations need to do. Indeed, a motivated person can and
 // probably should have this do a typed switch on the values.
-func (s *MockSpan) LogKV(keyValues ...interface{}) {
+func (s *MockSpan) LogKV(keyValues ...any) {
 	if len(keyValues)%2 != 0 {
 		s.LogFields(log.Error(fmt.Errorf("Non-even keyValues len: %v", len(keyValues))))
 		return
@@ -261,7 +261,7 @@ func (s *MockSpan) LogEvent(event string) {
 }
 
 // LogEventWithPayload belongs to the Span interface
-func (s *MockSpan) LogEventWithPayload(event string, payload interface{}) {
+func (s *MockSpan) LogEventWithPayload(event string, payload any) {
 	s.LogFields(log.String("event", event), log.Object("payload", payload))
 }
 

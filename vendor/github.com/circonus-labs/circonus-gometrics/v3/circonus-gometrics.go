@@ -6,25 +6,25 @@
 // of counters, gauges and histograms and allows you to publish them to
 // Circonus
 //
-// Counters
+// # Counters
 //
 // A counter is a monotonically-increasing, unsigned, 64-bit integer used to
 // represent the number of times an event has occurred. By tracking the deltas
 // between measurements of a counter over intervals of time, an aggregation
 // layer can derive rates, acceleration, etc.
 //
-// Gauges
+// # Gauges
 //
 // A gauge returns instantaneous measurements of something using signed, 64-bit
 // integers. This value does not need to be monotonic.
 //
-// Histograms
+// # Histograms
 //
 // A histogram tracks the distribution of a stream of values (e.g. the number of
 // seconds it takes to handle requests).  Circonus can calculate complex
 // analytics on these.
 //
-// Reporting
+// # Reporting
 //
 // A period push to a Circonus httptrap is confgurable.
 package circonusgometrics
@@ -48,13 +48,13 @@ const (
 // Logger facilitates use of any logger supporting the required methods
 // rather than just standard log package log.Logger
 type Logger interface {
-	Printf(string, ...interface{})
+	Printf(string, ...any)
 }
 
 // Metric defines an individual metric
 type Metric struct {
-	Type  string      `json:"_type"`
-	Value interface{} `json:"_value"`
+	Type  string `json:"_type"`
+	Value any    `json:"_value"`
 }
 
 // Metrics holds host metrics
@@ -105,7 +105,7 @@ type CirconusMetrics struct {
 	counterFuncs map[string]func() uint64
 	cfm          sync.Mutex
 
-	gauges map[string]interface{}
+	gauges map[string]any
 	gm     sync.Mutex
 
 	gaugeFuncs map[string]func() int64
@@ -136,7 +136,7 @@ func New(cfg *Config) (*CirconusMetrics, error) {
 	cm := &CirconusMetrics{
 		counters:     make(map[string]uint64),
 		counterFuncs: make(map[string]func() uint64),
-		gauges:       make(map[string]interface{}),
+		gauges:       make(map[string]any),
 		gaugeFuncs:   make(map[string]func() int64),
 		histograms:   make(map[string]*Histogram),
 		text:         make(map[string]string),

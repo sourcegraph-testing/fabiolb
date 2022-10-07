@@ -43,7 +43,7 @@ type Signer interface {
 // SigningKey represents an algorithm/key used to sign a message.
 type SigningKey struct {
 	Algorithm SignatureAlgorithm
-	Key       interface{}
+	Key       any
 }
 
 // SignerOptions represents options that can be set when creating signers.
@@ -54,14 +54,14 @@ type SignerOptions struct {
 	// Optional map of additional keys to be inserted into the protected header
 	// of a JWS object. Some specifications which make use of JWS like to insert
 	// additional values here. All values must be JSON-serializable.
-	ExtraHeaders map[HeaderKey]interface{}
+	ExtraHeaders map[HeaderKey]any
 }
 
 // WithHeader adds an arbitrary value to the ExtraHeaders map, initializing it
 // if necessary. It returns itself and so can be used in a fluent style.
-func (so *SignerOptions) WithHeader(k HeaderKey, v interface{}) *SignerOptions {
+func (so *SignerOptions) WithHeader(k HeaderKey, v any) *SignerOptions {
 	if so.ExtraHeaders == nil {
-		so.ExtraHeaders = map[HeaderKey]interface{}{}
+		so.ExtraHeaders = map[HeaderKey]any{}
 	}
 	so.ExtraHeaders[k] = v
 	return so
@@ -111,7 +111,7 @@ type genericSigner struct {
 	recipients   []recipientSigInfo
 	nonceSource  NonceSource
 	embedJWK     bool
-	extraHeaders map[HeaderKey]interface{}
+	extraHeaders map[HeaderKey]any
 }
 
 type recipientSigInfo struct {
@@ -152,7 +152,7 @@ func NewMultiSigner(sigs []SigningKey, opts *SignerOptions) (Signer, error) {
 }
 
 // newVerifier creates a verifier based on the key type
-func newVerifier(verificationKey interface{}) (payloadVerifier, error) {
+func newVerifier(verificationKey any) (payloadVerifier, error) {
 	switch verificationKey := verificationKey.(type) {
 	case ed25519.PublicKey:
 		return &edEncrypterVerifier{
@@ -181,7 +181,7 @@ func newVerifier(verificationKey interface{}) (payloadVerifier, error) {
 	return nil, ErrUnsupportedKeyType
 }
 
-func (ctx *genericSigner) addRecipient(alg SignatureAlgorithm, signingKey interface{}) error {
+func (ctx *genericSigner) addRecipient(alg SignatureAlgorithm, signingKey any) error {
 	recipient, err := makeJWSRecipient(alg, signingKey)
 	if err != nil {
 		return err
@@ -191,7 +191,7 @@ func (ctx *genericSigner) addRecipient(alg SignatureAlgorithm, signingKey interf
 	return nil
 }
 
-func makeJWSRecipient(alg SignatureAlgorithm, signingKey interface{}) (recipientSigInfo, error) {
+func makeJWSRecipient(alg SignatureAlgorithm, signingKey any) (recipientSigInfo, error) {
 	switch signingKey := signingKey.(type) {
 	case ed25519.PrivateKey:
 		return newEd25519Signer(alg, signingKey)
@@ -239,7 +239,7 @@ func (ctx *genericSigner) Sign(payload []byte) (*JSONWebSignature, error) {
 	obj.Signatures = make([]Signature, len(ctx.recipients))
 
 	for i, recipient := range ctx.recipients {
-		protected := map[HeaderKey]interface{}{
+		protected := map[HeaderKey]any{
 			headerAlgorithm: string(recipient.sigAlg),
 		}
 
@@ -328,7 +328,7 @@ func (ctx *genericSigner) Options() SignerOptions {
 // Be careful when verifying signatures based on embedded JWKs inside the
 // payload header. You cannot assume that the key received in a payload is
 // trusted.
-func (obj JSONWebSignature) Verify(verificationKey interface{}) ([]byte, error) {
+func (obj JSONWebSignature) Verify(verificationKey any) ([]byte, error) {
 	err := obj.DetachedVerify(obj.payload, verificationKey)
 	if err != nil {
 		return nil, err
@@ -347,7 +347,7 @@ func (obj JSONWebSignature) UnsafePayloadWithoutVerification() []byte {
 // most cases, you will probably want to use Verify instead. DetachedVerify
 // is only useful if you have a payload and signature that are separated from
 // each other.
-func (obj JSONWebSignature) DetachedVerify(payload []byte, verificationKey interface{}) error {
+func (obj JSONWebSignature) DetachedVerify(payload []byte, verificationKey any) error {
 	verifier, err := newVerifier(verificationKey)
 	if err != nil {
 		return err
@@ -388,7 +388,7 @@ func (obj JSONWebSignature) DetachedVerify(payload []byte, verificationKey inter
 // returns the index of the signature that was verified, along with the signature
 // object and the payload. We return the signature and index to guarantee that
 // callers are getting the verified value.
-func (obj JSONWebSignature) VerifyMulti(verificationKey interface{}) (int, Signature, []byte, error) {
+func (obj JSONWebSignature) VerifyMulti(verificationKey any) (int, Signature, []byte, error) {
 	idx, sig, err := obj.DetachedVerifyMulti(obj.payload, verificationKey)
 	if err != nil {
 		return -1, Signature{}, nil, err
@@ -405,7 +405,7 @@ func (obj JSONWebSignature) VerifyMulti(verificationKey interface{}) (int, Signa
 // DetachedVerifyMulti is only useful if you have a payload and signature that are
 // separated from each other, and the signature can have multiple signers at the
 // same time.
-func (obj JSONWebSignature) DetachedVerifyMulti(payload []byte, verificationKey interface{}) (int, Signature, error) {
+func (obj JSONWebSignature) DetachedVerifyMulti(payload []byte, verificationKey any) (int, Signature, error) {
 	verifier, err := newVerifier(verificationKey)
 	if err != nil {
 		return -1, Signature{}, err

@@ -106,9 +106,9 @@ func (d *HealthCheckDefinition) MarshalJSON() ([]byte, error) {
 func (t *HealthCheckDefinition) UnmarshalJSON(data []byte) (err error) {
 	type Alias HealthCheckDefinition
 	aux := &struct {
-		IntervalDuration                       interface{}
-		TimeoutDuration                        interface{}
-		DeregisterCriticalServiceAfterDuration interface{}
+		IntervalDuration                       any
+		TimeoutDuration                        any
+		DeregisterCriticalServiceAfterDuration any
 		*Alias
 	}{
 		Alias: (*Alias)(t),
@@ -171,8 +171,7 @@ type HealthChecks []*HealthCheck
 // attached, this function determines the best representative of the status as
 // as single string using the following heuristic:
 //
-//  maintenance > critical > warning > passing
-//
+//	maintenance > critical > warning > passing
 func (c HealthChecks) AggregatedStatus() string {
 	var passing, warning, critical, maintenance bool
 	for _, check := range c {

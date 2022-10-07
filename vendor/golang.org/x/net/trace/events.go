@@ -117,10 +117,10 @@ func parseEventsArgs(req *http.Request) (fam string, b int, ok bool) {
 type EventLog interface {
 	// Printf formats its arguments with fmt.Sprintf and adds the
 	// result to the event log.
-	Printf(format string, a ...interface{})
+	Printf(format string, a ...any)
 
 	// Errorf is like Printf, but it marks this event as an error.
-	Errorf(format string, a ...interface{})
+	Errorf(format string, a ...any)
 
 	// Finish declares that this event log is complete.
 	// The event log should not be used after calling this method.
@@ -302,15 +302,15 @@ func (el *eventLog) delta(t time.Time) (time.Duration, bool) {
 
 }
 
-func (el *eventLog) Printf(format string, a ...interface{}) {
+func (el *eventLog) Printf(format string, a ...any) {
 	el.printf(false, format, a...)
 }
 
-func (el *eventLog) Errorf(format string, a ...interface{}) {
+func (el *eventLog) Errorf(format string, a ...any) {
 	el.printf(true, format, a...)
 }
 
-func (el *eventLog) printf(isErr bool, format string, a ...interface{}) {
+func (el *eventLog) printf(isErr bool, format string, a ...any) {
 	e := logEntry{When: time.Now(), IsErr: isErr, What: fmt.Sprintf(format, a...)}
 	el.mu.Lock()
 	e.Elapsed, e.NewDay = el.delta(e.When)

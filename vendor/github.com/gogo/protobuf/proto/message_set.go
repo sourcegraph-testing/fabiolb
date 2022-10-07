@@ -141,7 +141,7 @@ func skipVarint(buf []byte) []byte {
 
 // unmarshalMessageSet decodes the extension map encoded in buf in the message set wire format.
 // It is called by Unmarshal methods on protocol buffer messages with the message_set_wire_format option.
-func unmarshalMessageSet(buf []byte, exts interface{}) error {
+func unmarshalMessageSet(buf []byte, exts any) error {
 	var m map[int32]Extension
 	switch exts := exts.(type) {
 	case *XXX_InternalExtensions:

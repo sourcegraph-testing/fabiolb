@@ -373,7 +373,7 @@ func (u *unmarshalInfo) computeUnmarshalInfo() {
 	// Find any types associated with oneof fields.
 	// gogo: len(oneofFields) > 0 is needed for embedded oneof messages, without a marshaler and unmarshaler
 	if len(oneofFields) > 0 {
-		var oneofImplementers []interface{}
+		var oneofImplementers []any
 		switch m := reflect.Zero(reflect.PtrTo(t)).Interface().(type) {
 		case oneofFuncsIface:
 			_, _, _, oneofImplementers = m.XXX_OneofFuncs()
@@ -2004,12 +2004,14 @@ func makeUnmarshalMap(f *reflect.StructField) unmarshaler {
 
 // makeUnmarshalOneof makes an unmarshaler for oneof fields.
 // for:
-// message Msg {
-//   oneof F {
-//     int64 X = 1;
-//     float64 Y = 2;
-//   }
-// }
+//
+//	message Msg {
+//	  oneof F {
+//	    int64 X = 1;
+//	    float64 Y = 2;
+//	  }
+//	}
+//
 // typ is the type of the concrete entry for a oneof case (e.g. Msg_X).
 // ityp is the interface type of the oneof field (e.g. isMsg_F).
 // unmarshal is the unmarshaler for the base type of the oneof case (e.g. int64).

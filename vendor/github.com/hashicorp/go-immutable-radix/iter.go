@@ -151,7 +151,7 @@ func (i *Iterator) SeekLowerBound(key []byte) {
 }
 
 // Next returns the next node in order
-func (i *Iterator) Next() ([]byte, interface{}, bool) {
+func (i *Iterator) Next() ([]byte, any, bool) {
 	// Initialize our stack if needed
 	if i.stack == nil && i.node != nil {
 		i.stack = []edges{

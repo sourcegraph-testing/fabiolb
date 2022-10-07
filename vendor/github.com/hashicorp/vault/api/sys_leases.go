@@ -8,7 +8,7 @@ import (
 func (c *Sys) Renew(id string, increment int) (*Secret, error) {
 	r := c.c.NewRequest("PUT", "/v1/sys/leases/renew")
 
-	body := map[string]interface{}{
+	body := map[string]any{
 		"increment": increment,
 		"lease_id":  id,
 	}
@@ -80,7 +80,7 @@ func (c *Sys) RevokeWithOptions(opts *RevokeOptions) error {
 
 	r := c.c.NewRequest("PUT", path)
 	if !opts.Force {
-		body := map[string]interface{}{
+		body := map[string]any{
 			"sync": opts.Sync,
 		}
 		if err := r.SetJSONBody(body); err != nil {

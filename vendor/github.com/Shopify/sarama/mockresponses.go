@@ -7,10 +7,10 @@ import (
 // TestReporter has methods matching go's testing.T to avoid importing
 // `testing` in the main part of the library.
 type TestReporter interface {
-	Error(...interface{})
-	Errorf(string, ...interface{})
-	Fatal(...interface{})
-	Fatalf(string, ...interface{})
+	Error(...any)
+	Errorf(string, ...any)
+	Fatal(...any)
+	Fatalf(string, ...any)
 }
 
 // MockResponse is a response builder interface it defines one method that
@@ -42,7 +42,7 @@ type MockSequence struct {
 	responses []MockResponse
 }
 
-func NewMockSequence(responses ...interface{}) *MockSequence {
+func NewMockSequence(responses ...any) *MockSequence {
 	ms := &MockSequence{}
 	ms.responses = make([]MockResponse, len(responses))
 	for i, res := range responses {
@@ -300,13 +300,13 @@ func (mfr *MockFetchResponse) getHighWaterMark(topic string, partition int32) in
 
 // MockConsumerMetadataResponse is a `ConsumerMetadataResponse` builder.
 type MockConsumerMetadataResponse struct {
-	coordinators map[string]interface{}
+	coordinators map[string]any
 	t            TestReporter
 }
 
 func NewMockConsumerMetadataResponse(t TestReporter) *MockConsumerMetadataResponse {
 	return &MockConsumerMetadataResponse{
-		coordinators: make(map[string]interface{}),
+		coordinators: make(map[string]any),
 		t:            t,
 	}
 }
@@ -337,15 +337,15 @@ func (mr *MockConsumerMetadataResponse) For(reqBody versionedDecoder) encoder {
 
 // MockFindCoordinatorResponse is a `FindCoordinatorResponse` builder.
 type MockFindCoordinatorResponse struct {
-	groupCoordinators map[string]interface{}
-	transCoordinators map[string]interface{}
+	groupCoordinators map[string]any
+	transCoordinators map[string]any
 	t                 TestReporter
 }
 
 func NewMockFindCoordinatorResponse(t TestReporter) *MockFindCoordinatorResponse {
 	return &MockFindCoordinatorResponse{
-		groupCoordinators: make(map[string]interface{}),
-		transCoordinators: make(map[string]interface{}),
+		groupCoordinators: make(map[string]any),
+		transCoordinators: make(map[string]any),
 		t:                 t,
 	}
 }
@@ -373,7 +373,7 @@ func (mr *MockFindCoordinatorResponse) SetError(coordinatorType CoordinatorType,
 func (mr *MockFindCoordinatorResponse) For(reqBody versionedDecoder) encoder {
 	req := reqBody.(*FindCoordinatorRequest)
 	res := &FindCoordinatorResponse{}
-	var v interface{}
+	var v any
 	switch req.CoordinatorType {
 	case CoordinatorGroup:
 		v = mr.groupCoordinators[req.CoordinatorKey]

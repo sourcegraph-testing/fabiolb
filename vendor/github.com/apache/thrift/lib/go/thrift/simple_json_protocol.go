@@ -65,7 +65,6 @@ func (p _ParseContext) String() string {
 // This protocol produces/consumes a simple output format
 // suitable for parsing by scripting languages.  It should not be
 // confused with the full-featured TJSONProtocol.
-//
 type TSimpleJSONProtocol struct {
 	trans TTransport
 
@@ -1078,7 +1077,7 @@ func (p *TSimpleJSONProtocol) ParseListEnd() error {
 	return p.ParsePostValue()
 }
 
-func (p *TSimpleJSONProtocol) readSingleValue() (interface{}, TType, error) {
+func (p *TSimpleJSONProtocol) readSingleValue() (any, TType, error) {
 	e := p.readNonSignificantWhitespace()
 	if e != nil {
 		return nil, VOID, NewTProtocolException(e)
@@ -1136,10 +1135,10 @@ func (p *TSimpleJSONProtocol) readSingleValue() (interface{}, TType, error) {
 			return false, BOOL, nil
 		case JSON_LBRACKET[0]:
 			_, e := p.reader.ReadByte()
-			return make([]interface{}, 0), LIST, NewTProtocolException(e)
+			return make([]any, 0), LIST, NewTProtocolException(e)
 		case JSON_LBRACE[0]:
 			_, e := p.reader.ReadByte()
-			return make(map[string]interface{}), STRUCT, NewTProtocolException(e)
+			return make(map[string]any), STRUCT, NewTProtocolException(e)
 		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'e', 'E', '.', '+', '-', JSON_INFINITY[0], JSON_NAN[0]:
 			// assume numeric
 			v, e := p.readNumeric()

@@ -64,9 +64,9 @@ type intLogger struct {
 	writer *writer
 	level  *int32
 
-	implied []interface{}
+	implied []any
 
-	exclude func(level Level, msg string, args ...interface{}) bool
+	exclude func(level Level, msg string, args ...any) bool
 }
 
 // New returns a configured logger.
@@ -126,7 +126,7 @@ func newLogger(opts *LoggerOptions) *intLogger {
 
 // Log a message and a set of key/value pairs if the given level is at
 // or more severe that the threshold configured in the Logger.
-func (l *intLogger) log(name string, level Level, msg string, args ...interface{}) {
+func (l *intLogger) log(name string, level Level, msg string, args ...any) {
 	if level < Level(atomic.LoadInt32(l.level)) {
 		return
 	}
@@ -181,7 +181,7 @@ func trimCallerPath(path string) string {
 var logImplFile = regexp.MustCompile(`.+intlogger.go|.+interceptlogger.go$`)
 
 // Non-JSON logging format function
-func (l *intLogger) logPlain(t time.Time, name string, level Level, msg string, args ...interface{}) {
+func (l *intLogger) logPlain(t time.Time, name string, level Level, msg string, args ...any) {
 	if len(l.timeFormat) > 0 {
 		l.writer.WriteString(t.Format(l.timeFormat))
 		l.writer.WriteByte(' ')
@@ -358,7 +358,7 @@ func (l *intLogger) renderSlice(v reflect.Value) string {
 }
 
 // JSON logging function
-func (l *intLogger) logJSON(t time.Time, name string, level Level, msg string, args ...interface{}) {
+func (l *intLogger) logJSON(t time.Time, name string, level Level, msg string, args ...any) {
 	vals := l.jsonMapEntry(t, name, level, msg)
 	args = append(l.implied, args...)
 
@@ -413,8 +413,8 @@ func (l *intLogger) logJSON(t time.Time, name string, level Level, msg string, a
 	}
 }
 
-func (l intLogger) jsonMapEntry(t time.Time, name string, level Level, msg string) map[string]interface{} {
-	vals := map[string]interface{}{
+func (l intLogger) jsonMapEntry(t time.Time, name string, level Level, msg string) map[string]any {
+	vals := map[string]any{
 		"@message":   msg,
 		"@timestamp": t.Format("2006-01-02T15:04:05.000000Z07:00"),
 	}
@@ -450,32 +450,32 @@ func (l intLogger) jsonMapEntry(t time.Time, name string, level Level, msg strin
 }
 
 // Emit the message and args at the provided level
-func (l *intLogger) Log(level Level, msg string, args ...interface{}) {
+func (l *intLogger) Log(level Level, msg string, args ...any) {
 	l.log(l.Name(), level, msg, args...)
 }
 
 // Emit the message and args at DEBUG level
-func (l *intLogger) Debug(msg string, args ...interface{}) {
+func (l *intLogger) Debug(msg string, args ...any) {
 	l.log(l.Name(), Debug, msg, args...)
 }
 
 // Emit the message and args at TRACE level
-func (l *intLogger) Trace(msg string, args ...interface{}) {
+func (l *intLogger) Trace(msg string, args ...any) {
 	l.log(l.Name(), Trace, msg, args...)
 }
 
 // Emit the message and args at INFO level
-func (l *intLogger) Info(msg string, args ...interface{}) {
+func (l *intLogger) Info(msg string, args ...any) {
 	l.log(l.Name(), Info, msg, args...)
 }
 
 // Emit the message and args at WARN level
-func (l *intLogger) Warn(msg string, args ...interface{}) {
+func (l *intLogger) Warn(msg string, args ...any) {
 	l.log(l.Name(), Warn, msg, args...)
 }
 
 // Emit the message and args at ERROR level
-func (l *intLogger) Error(msg string, args ...interface{}) {
+func (l *intLogger) Error(msg string, args ...any) {
 	l.log(l.Name(), Error, msg, args...)
 }
 
@@ -509,8 +509,8 @@ const MissingKey = "EXTRA_VALUE_AT_END"
 // Return a sub-Logger for which every emitted log message will contain
 // the given key/value pairs. This is used to create a context specific
 // Logger.
-func (l *intLogger) With(args ...interface{}) Logger {
-	var extra interface{}
+func (l *intLogger) With(args ...any) Logger {
+	var extra any
 
 	if len(args)%2 != 0 {
 		extra = args[len(args)-1]
@@ -519,7 +519,7 @@ func (l *intLogger) With(args ...interface{}) Logger {
 
 	sl := *l
 
-	result := make(map[string]interface{}, len(l.implied)+len(args))
+	result := make(map[string]any, len(l.implied)+len(args))
 	keys := make([]string, 0, len(l.implied)+len(args))
 
 	// Read existing args, store map and key for consistent sorting
@@ -541,7 +541,7 @@ func (l *intLogger) With(args ...interface{}) Logger {
 	// Sort keys to be consistent
 	sort.Strings(keys)
 
-	sl.implied = make([]interface{}, 0, len(l.implied)+len(args))
+	sl.implied = make([]any, 0, len(l.implied)+len(args))
 	for _, k := range keys {
 		sl.implied = append(sl.implied, k)
 		sl.implied = append(sl.implied, result[k])
@@ -650,12 +650,12 @@ func (l *intLogger) checkWriterIsFile() *os.File {
 }
 
 // Accept implements the SinkAdapter interface
-func (i *intLogger) Accept(name string, level Level, msg string, args ...interface{}) {
+func (i *intLogger) Accept(name string, level Level, msg string, args ...any) {
 	i.log(name, level, msg, args...)
 }
 
 // ImpliedArgs returns the loggers implied args
-func (i *intLogger) ImpliedArgs() []interface{} {
+func (i *intLogger) ImpliedArgs() []any {
 	return i.implied
 }
 

@@ -98,7 +98,7 @@ func newTextParser(s string) *textParser {
 	return p
 }
 
-func (p *textParser) errorf(format string, a ...interface{}) *ParseError {
+func (p *textParser) errorf(format string, a ...any) *ParseError {
 	pe := &ParseError{fmt.Sprintf(format, a...), p.cur.line, p.cur.offset}
 	p.cur.err = pe
 	p.done = true

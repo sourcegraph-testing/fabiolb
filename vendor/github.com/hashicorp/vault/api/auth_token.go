@@ -65,7 +65,7 @@ func (c *TokenAuth) CreateWithRole(opts *TokenCreateRequest, roleName string) (*
 
 func (c *TokenAuth) Lookup(token string) (*Secret, error) {
 	r := c.c.NewRequest("POST", "/v1/auth/token/lookup")
-	if err := r.SetJSONBody(map[string]interface{}{
+	if err := r.SetJSONBody(map[string]any{
 		"token": token,
 	}); err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (c *TokenAuth) Lookup(token string) (*Secret, error) {
 
 func (c *TokenAuth) LookupAccessor(accessor string) (*Secret, error) {
 	r := c.c.NewRequest("POST", "/v1/auth/token/lookup-accessor")
-	if err := r.SetJSONBody(map[string]interface{}{
+	if err := r.SetJSONBody(map[string]any{
 		"accessor": accessor,
 	}); err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func (c *TokenAuth) LookupSelf() (*Secret, error) {
 
 func (c *TokenAuth) Renew(token string, increment int) (*Secret, error) {
 	r := c.c.NewRequest("PUT", "/v1/auth/token/renew")
-	if err := r.SetJSONBody(map[string]interface{}{
+	if err := r.SetJSONBody(map[string]any{
 		"token":     token,
 		"increment": increment,
 	}); err != nil {
@@ -138,7 +138,7 @@ func (c *TokenAuth) Renew(token string, increment int) (*Secret, error) {
 func (c *TokenAuth) RenewSelf(increment int) (*Secret, error) {
 	r := c.c.NewRequest("PUT", "/v1/auth/token/renew-self")
 
-	body := map[string]interface{}{"increment": increment}
+	body := map[string]any{"increment": increment}
 	if err := r.SetJSONBody(body); err != nil {
 		return nil, err
 	}
@@ -160,7 +160,7 @@ func (c *TokenAuth) RenewTokenAsSelf(token string, increment int) (*Secret, erro
 	r := c.c.NewRequest("PUT", "/v1/auth/token/renew-self")
 	r.ClientToken = token
 
-	body := map[string]interface{}{"increment": increment}
+	body := map[string]any{"increment": increment}
 	if err := r.SetJSONBody(body); err != nil {
 		return nil, err
 	}
@@ -180,7 +180,7 @@ func (c *TokenAuth) RenewTokenAsSelf(token string, increment int) (*Secret, erro
 // along with all the child tokens.
 func (c *TokenAuth) RevokeAccessor(accessor string) error {
 	r := c.c.NewRequest("POST", "/v1/auth/token/revoke-accessor")
-	if err := r.SetJSONBody(map[string]interface{}{
+	if err := r.SetJSONBody(map[string]any{
 		"accessor": accessor,
 	}); err != nil {
 		return err
@@ -201,7 +201,7 @@ func (c *TokenAuth) RevokeAccessor(accessor string) error {
 // child tokens are orphaned rather than revoked)
 func (c *TokenAuth) RevokeOrphan(token string) error {
 	r := c.c.NewRequest("PUT", "/v1/auth/token/revoke-orphan")
-	if err := r.SetJSONBody(map[string]interface{}{
+	if err := r.SetJSONBody(map[string]any{
 		"token": token,
 	}); err != nil {
 		return err
@@ -240,7 +240,7 @@ func (c *TokenAuth) RevokeSelf(token string) error {
 // etc.
 func (c *TokenAuth) RevokeTree(token string) error {
 	r := c.c.NewRequest("PUT", "/v1/auth/token/revoke")
-	if err := r.SetJSONBody(map[string]interface{}{
+	if err := r.SetJSONBody(map[string]any{
 		"token": token,
 	}); err != nil {
 		return err

@@ -34,19 +34,19 @@ const (
 func (n noopSpanContext) ForeachBaggageItem(handler func(k, v string) bool) {}
 
 // noopSpan:
-func (n noopSpan) Context() SpanContext                                  { return defaultNoopSpanContext }
-func (n noopSpan) SetBaggageItem(key, val string) Span                   { return n }
-func (n noopSpan) BaggageItem(key string) string                         { return emptyString }
-func (n noopSpan) SetTag(key string, value interface{}) Span             { return n }
-func (n noopSpan) LogFields(fields ...log.Field)                         {}
-func (n noopSpan) LogKV(keyVals ...interface{})                          {}
-func (n noopSpan) Finish()                                               {}
-func (n noopSpan) FinishWithOptions(opts FinishOptions)                  {}
-func (n noopSpan) SetOperationName(operationName string) Span            { return n }
-func (n noopSpan) Tracer() Tracer                                        { return defaultNoopTracer }
-func (n noopSpan) LogEvent(event string)                                 {}
-func (n noopSpan) LogEventWithPayload(event string, payload interface{}) {}
-func (n noopSpan) Log(data LogData)                                      {}
+func (n noopSpan) Context() SpanContext                          { return defaultNoopSpanContext }
+func (n noopSpan) SetBaggageItem(key, val string) Span           { return n }
+func (n noopSpan) BaggageItem(key string) string                 { return emptyString }
+func (n noopSpan) SetTag(key string, value any) Span             { return n }
+func (n noopSpan) LogFields(fields ...log.Field)                 {}
+func (n noopSpan) LogKV(keyVals ...any)                          {}
+func (n noopSpan) Finish()                                       {}
+func (n noopSpan) FinishWithOptions(opts FinishOptions)          {}
+func (n noopSpan) SetOperationName(operationName string) Span    { return n }
+func (n noopSpan) Tracer() Tracer                                { return defaultNoopTracer }
+func (n noopSpan) LogEvent(event string)                         {}
+func (n noopSpan) LogEventWithPayload(event string, payload any) {}
+func (n noopSpan) Log(data LogData)                              {}
 
 // StartSpan belongs to the Tracer interface.
 func (n NoopTracer) StartSpan(operationName string, opts ...StartSpanOption) Span {
@@ -54,11 +54,11 @@ func (n NoopTracer) StartSpan(operationName string, opts ...StartSpanOption) Spa
 }
 
 // Inject belongs to the Tracer interface.
-func (n NoopTracer) Inject(sp SpanContext, format interface{}, carrier interface{}) error {
+func (n NoopTracer) Inject(sp SpanContext, format any, carrier any) error {
 	return nil
 }
 
 // Extract belongs to the Tracer interface.
-func (n NoopTracer) Extract(format interface{}, carrier interface{}) (SpanContext, error) {
+func (n NoopTracer) Extract(format any, carrier any) (SpanContext, error) {
 	return nil, ErrSpanContextNotFound
 }

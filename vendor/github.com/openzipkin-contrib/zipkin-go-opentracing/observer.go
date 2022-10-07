@@ -39,7 +39,7 @@ func (o spanObserver) OnSetOperationName(operationName string) {
 	}
 }
 
-func (o spanObserver) OnSetTag(key string, value interface{}) {
+func (o spanObserver) OnSetTag(key string, value any) {
 	for _, obs := range o.observers {
 		obs.OnSetTag(key, value)
 	}

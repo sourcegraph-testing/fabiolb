@@ -33,7 +33,7 @@ type Builder interface {
 	// into single JSON object. If you are passing private claims, make sure to set
 	// struct field tags to specify the name for the JSON key to be used when
 	// serializing.
-	Claims(i interface{}) Builder
+	Claims(i any) Builder
 	// Token builds a JSONWebToken from provided data.
 	Token() (*JSONWebToken, error)
 	// FullSerialize serializes a token using the full serialization format.
@@ -50,7 +50,7 @@ type NestedBuilder interface {
 	// into single JSON object. If you are passing private claims, make sure to set
 	// struct field tags to specify the name for the JSON key to be used when
 	// serializing.
-	Claims(i interface{}) NestedBuilder
+	Claims(i any) NestedBuilder
 	// Token builds a NestedJSONWebToken from provided data.
 	Token() (*NestedJSONWebToken, error)
 	// FullSerialize serializes a token using the full serialization format.
@@ -60,7 +60,7 @@ type NestedBuilder interface {
 }
 
 type builder struct {
-	payload map[string]interface{}
+	payload map[string]any
 	err     error
 }
 
@@ -110,12 +110,12 @@ func SignedAndEncrypted(sig jose.Signer, enc jose.Encrypter) NestedBuilder {
 	}
 }
 
-func (b builder) claims(i interface{}) builder {
+func (b builder) claims(i any) builder {
 	if b.err != nil {
 		return b
 	}
 
-	m, ok := i.(map[string]interface{})
+	m, ok := i.(map[string]any)
 	switch {
 	case ok:
 		return b.merge(m)
@@ -134,8 +134,8 @@ func (b builder) claims(i interface{}) builder {
 	}
 }
 
-func normalize(i interface{}) (map[string]interface{}, error) {
-	m := make(map[string]interface{})
+func normalize(i any) (map[string]any, error) {
+	m := make(map[string]any)
 
 	raw, err := json.Marshal(i)
 	if err != nil {
@@ -152,8 +152,8 @@ func normalize(i interface{}) (map[string]interface{}, error) {
 	return m, nil
 }
 
-func (b *builder) merge(m map[string]interface{}) builder {
-	p := make(map[string]interface{})
+func (b *builder) merge(m map[string]any) builder {
+	p := make(map[string]any)
 	for k, v := range b.payload {
 		p[k] = v
 	}
@@ -166,14 +166,14 @@ func (b *builder) merge(m map[string]interface{}) builder {
 	}
 }
 
-func (b *builder) token(p func(interface{}) ([]byte, error), h []jose.Header) (*JSONWebToken, error) {
+func (b *builder) token(p func(any) ([]byte, error), h []jose.Header) (*JSONWebToken, error) {
 	return &JSONWebToken{
 		payload: p,
 		Headers: h,
 	}, nil
 }
 
-func (b *signedBuilder) Claims(i interface{}) Builder {
+func (b *signedBuilder) Claims(i any) Builder {
 	return &signedBuilder{
 		builder: b.builder.claims(i),
 		sig:     b.sig,
@@ -225,7 +225,7 @@ func (b *signedBuilder) sign() (*jose.JSONWebSignature, error) {
 	return b.sig.Sign(p)
 }
 
-func (b *encryptedBuilder) Claims(i interface{}) Builder {
+func (b *encryptedBuilder) Claims(i any) Builder {
 	return &encryptedBuilder{
 		builder: b.builder.claims(i),
 		enc:     b.enc,
@@ -272,7 +272,7 @@ func (b *encryptedBuilder) encrypt() (*jose.JSONWebEncryption, error) {
 	return b.enc.Encrypt(p)
 }
 
-func (b *nestedBuilder) Claims(i interface{}) NestedBuilder {
+func (b *nestedBuilder) Claims(i any) NestedBuilder {
 	return &nestedBuilder{
 		builder: b.builder.claims(i),
 		sig:     b.sig,

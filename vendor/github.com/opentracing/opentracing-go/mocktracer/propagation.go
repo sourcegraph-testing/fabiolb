@@ -24,7 +24,7 @@ type Injector interface {
 	//
 	// Implementations may return opentracing.ErrInvalidCarrier or any other
 	// implementation-specific error if injection fails.
-	Inject(ctx MockSpanContext, carrier interface{}) error
+	Inject(ctx MockSpanContext, carrier any) error
 }
 
 // Extractor is responsible for extracting SpanContext instances from a
@@ -35,7 +35,7 @@ type Extractor interface {
 	// Extract decodes a SpanContext instance from the given `carrier`,
 	// or (nil, opentracing.ErrSpanContextNotFound) if no context could
 	// be found in the `carrier`.
-	Extract(carrier interface{}) (MockSpanContext, error)
+	Extract(carrier any) (MockSpanContext, error)
 }
 
 // TextMapPropagator implements Injector/Extractor for TextMap and HTTPHeaders formats.
@@ -44,7 +44,7 @@ type TextMapPropagator struct {
 }
 
 // Inject implements the Injector interface
-func (t *TextMapPropagator) Inject(spanContext MockSpanContext, carrier interface{}) error {
+func (t *TextMapPropagator) Inject(spanContext MockSpanContext, carrier any) error {
 	writer, ok := carrier.(opentracing.TextMapWriter)
 	if !ok {
 		return opentracing.ErrInvalidCarrier
@@ -65,7 +65,7 @@ func (t *TextMapPropagator) Inject(spanContext MockSpanContext, carrier interfac
 }
 
 // Extract implements the Extractor interface
-func (t *TextMapPropagator) Extract(carrier interface{}) (MockSpanContext, error) {
+func (t *TextMapPropagator) Extract(carrier any) (MockSpanContext, error) {
 	reader, ok := carrier.(opentracing.TextMapReader)
 	if !ok {
 		return emptyContext, opentracing.ErrInvalidCarrier

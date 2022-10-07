@@ -3,7 +3,7 @@ package zipkintracer
 import "github.com/opentracing/opentracing-go"
 
 // A SpanEvent is emitted when a mutating command is called on a Span.
-type SpanEvent interface{}
+type SpanEvent any
 
 // EventCreate is emitted when a Span is created.
 type EventCreate struct{ OperationName string }
@@ -11,7 +11,7 @@ type EventCreate struct{ OperationName string }
 // EventTag is received when SetTag is called.
 type EventTag struct {
 	Key   string
-	Value interface{}
+	Value any
 }
 
 // EventBaggage is received when SetBaggageItem is called.
@@ -35,7 +35,7 @@ func (s *spanImpl) onCreate(opName string) {
 		s.event(EventCreate{OperationName: opName})
 	}
 }
-func (s *spanImpl) onTag(key string, value interface{}) {
+func (s *spanImpl) onTag(key string, value any) {
 	if s.event != nil {
 		s.event(EventTag{Key: key, Value: value})
 	}

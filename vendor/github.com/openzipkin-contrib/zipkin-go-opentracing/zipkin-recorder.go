@@ -62,11 +62,12 @@ func WithStrictMaterializer() RecorderOption {
 // If application does not listen for incoming requests or an endpoint Context
 // does not involve network address and/or port these cases can be solved like
 // this:
-//  # port is not applicable:
-//  NewRecorder(c, debug, "192.168.1.12:0", "ServiceA")
 //
-//  # network address and port are not applicable:
-//  NewRecorder(c, debug, "0.0.0.0:0", "ServiceB")
+//	# port is not applicable:
+//	NewRecorder(c, debug, "192.168.1.12:0", "ServiceA")
+//
+//	# network address and port are not applicable:
+//	NewRecorder(c, debug, "0.0.0.0:0", "ServiceB")
 func NewRecorder(c Collector, debug bool, hostPort, serviceName string, options ...RecorderOption) SpanRecorder {
 	r := &Recorder{
 		collector:    c,
@@ -201,7 +202,7 @@ func annotate(span *zipkincore.Span, timestamp time.Time, value string, host *zi
 
 // annotateBinary annotates the span with a key and a value that will be []byte
 // encoded.
-func annotateBinary(span *zipkincore.Span, key string, value interface{}, host *zipkincore.Endpoint) {
+func annotateBinary(span *zipkincore.Span, key string, value any, host *zipkincore.Endpoint) {
 	if b, ok := value.(bool); ok {
 		if b {
 			value = "true"

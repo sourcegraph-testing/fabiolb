@@ -34,7 +34,7 @@ type Field struct {
 	fieldType    fieldType
 	numericVal   int64
 	stringVal    string
-	interfaceVal interface{}
+	interfaceVal any
 }
 
 // String adds a string-valued key:value pair to a Span.LogFields() record
@@ -135,7 +135,7 @@ func Error(err error) Field {
 // Please pass in an immutable object, otherwise there may be concurrency issues.
 // Such as passing in the map, log.Object may result in "fatal error: concurrent map iteration and map write".
 // Because span is sent asynchronously, it is possible that this map will also be modified.
-func Object(key string, obj interface{}) Field {
+func Object(key string, obj any) Field {
 	return Field{
 		key:          key,
 		fieldType:    objectType,
@@ -170,15 +170,14 @@ func Lazy(ll LazyLogger) Field {
 // It can be used to capture optional fields, for example those that should
 // only be logged in non-production environment:
 //
-//     func customerField(order *Order) log.Field {
-//          if os.Getenv("ENVIRONMENT") == "dev" {
-//              return log.String("customer", order.Customer.ID)
-//          }
-//          return log.Noop()
-//     }
+//	func customerField(order *Order) log.Field {
+//	     if os.Getenv("ENVIRONMENT") == "dev" {
+//	         return log.String("customer", order.Customer.ID)
+//	     }
+//	     return log.Noop()
+//	}
 //
-//     span.LogFields(log.String("event", "purchase"), customerField(order))
-//
+//	span.LogFields(log.String("event", "purchase"), customerField(order))
 func Noop() Field {
 	return Field{
 		fieldType: noopType,
@@ -200,7 +199,7 @@ type Encoder interface {
 	EmitUint64(key string, value uint64)
 	EmitFloat32(key string, value float32)
 	EmitFloat64(key string, value float64)
-	EmitObject(key string, value interface{})
+	EmitObject(key string, value any)
 	EmitLazyLogger(value LazyLogger)
 }
 
@@ -247,7 +246,7 @@ func (lf Field) Key() string {
 }
 
 // Value returns the field's value as interface{}.
-func (lf Field) Value() interface{} {
+func (lf Field) Value() any {
 	switch lf.fieldType {
 	case stringType:
 		return lf.stringVal

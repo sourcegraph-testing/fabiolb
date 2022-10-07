@@ -15,7 +15,7 @@ var ErrMissingValue = errors.New("(MISSING)")
 // log event from keyvals, a variadic sequence of alternating keys and values.
 // The signature is compatible with the Go kit log package.
 type Logger interface {
-	Log(keyvals ...interface{}) error
+	Log(keyvals ...any) error
 }
 
 // NewNopLogger provides a Logger that discards all Log data sent to it.
@@ -35,7 +35,7 @@ type wrappedLogger struct {
 }
 
 // Log implements Logger
-func (l *wrappedLogger) Log(k ...interface{}) error {
+func (l *wrappedLogger) Log(k ...any) error {
 	if len(k)%2 == 1 {
 		k = append(k, ErrMissingValue)
 	}
@@ -51,14 +51,14 @@ func (l *wrappedLogger) Log(k ...interface{}) error {
 type nopLogger struct{}
 
 // Log implements Logger
-func (*nopLogger) Log(_ ...interface{}) error { return nil }
+func (*nopLogger) Log(_ ...any) error { return nil }
 
 // LoggerFunc is an adapter to allow use of ordinary functions as Loggers. If
 // f is a function with the appropriate signature, LoggerFunc(f) is a Logger
 // object that calls f.
-type LoggerFunc func(...interface{}) error
+type LoggerFunc func(...any) error
 
 // Log implements Logger by calling f(keyvals...).
-func (f LoggerFunc) Log(keyvals ...interface{}) error {
+func (f LoggerFunc) Log(keyvals ...any) error {
 	return f(keyvals...)
 }

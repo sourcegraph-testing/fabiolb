@@ -23,10 +23,10 @@ type differ struct {
 // segment is a differ.path component used for lazy formatting.
 type segment struct {
 	format string
-	x      interface{}
+	x      any
 }
 
-func (t *travel) differ(path []*segment, msg string, args ...interface{}) {
+func (t *travel) differ(path []*segment, msg string, args ...any) {
 	var buf bytes.Buffer
 	for _, s := range path {
 		buf.WriteString(fmt.Sprintf(s.format, s.x))

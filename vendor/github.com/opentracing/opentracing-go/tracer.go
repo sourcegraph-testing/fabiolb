@@ -65,7 +65,7 @@ type Tracer interface {
 	// fails anyway.
 	//
 	// See Tracer.Extract().
-	Inject(sm SpanContext, format interface{}, carrier interface{}) error
+	Inject(sm SpanContext, format any, carrier any) error
 
 	// Extract() returns a SpanContext instance given `format` and `carrier`.
 	//
@@ -108,7 +108,7 @@ type Tracer interface {
 	//    errors.
 	//
 	// See Tracer.Inject().
-	Extract(format interface{}, carrier interface{}) (SpanContext, error)
+	Extract(format any, carrier any) (SpanContext, error)
 }
 
 // StartSpanOptions allows Tracer.StartSpan() callers and implementors a
@@ -121,14 +121,13 @@ type Tracer interface {
 // Tracer implementations can convert a slice of `StartSpanOption` instances
 // into a `StartSpanOptions` struct like so:
 //
-//     func StartSpan(opName string, opts ...opentracing.StartSpanOption) {
-//         sso := opentracing.StartSpanOptions{}
-//         for _, o := range opts {
-//             o.Apply(&sso)
-//         }
-//         ...
-//     }
-//
+//	func StartSpan(opName string, opts ...opentracing.StartSpanOption) {
+//	    sso := opentracing.StartSpanOptions{}
+//	    for _, o := range opts {
+//	        o.Apply(&sso)
+//	    }
+//	    ...
+//	}
 type StartSpanOptions struct {
 	// Zero or more causal references to other Spans (via their SpanContext).
 	// If empty, start a "root" Span (i.e., start a new trace).
@@ -143,7 +142,7 @@ type StartSpanOptions struct {
 	//
 	// If specified, the caller hands off ownership of Tags at
 	// StartSpan() invocation time.
-	Tags map[string]interface{}
+	Tags map[string]any
 }
 
 // StartSpanOption instances (zero or more) may be passed to Tracer.StartSpan.
@@ -212,8 +211,8 @@ const (
 // ReferencedContext==nil, it has no effect. Thus it allows for a more concise
 // syntax for starting spans:
 //
-//     sc, _ := tracer.Extract(someFormat, someCarrier)
-//     span := tracer.StartSpan("operation", opentracing.ChildOf(sc))
+//	sc, _ := tracer.Extract(someFormat, someCarrier)
+//	span := tracer.StartSpan("operation", opentracing.ChildOf(sc))
 //
 // The `ChildOf(sc)` option above will not panic if sc == nil, it will just
 // not add the parent span reference to the options.
@@ -264,12 +263,12 @@ func (t StartTime) Apply(o *StartSpanOptions) {
 // Tags are a generic map from an arbitrary string key to an opaque value type.
 // The underlying tracing system is responsible for interpreting and
 // serializing the values.
-type Tags map[string]interface{}
+type Tags map[string]any
 
 // Apply satisfies the StartSpanOption interface.
 func (t Tags) Apply(o *StartSpanOptions) {
 	if o.Tags == nil {
-		o.Tags = make(map[string]interface{})
+		o.Tags = make(map[string]any)
 	}
 	for k, v := range t {
 		o.Tags[k] = v
@@ -282,18 +281,18 @@ func (t Tags) Apply(o *StartSpanOptions) {
 //
 // tracer.StartSpan("opName", Tag{"Key", value})
 //
-//   or
+//	or
 //
 // Tag{"key", value}.Set(span)
 type Tag struct {
 	Key   string
-	Value interface{}
+	Value any
 }
 
 // Apply satisfies the StartSpanOption interface.
 func (t Tag) Apply(o *StartSpanOptions) {
 	if o.Tags == nil {
-		o.Tags = make(map[string]interface{})
+		o.Tags = make(map[string]any)
 	}
 	o.Tags[t.Key] = t.Value
 }

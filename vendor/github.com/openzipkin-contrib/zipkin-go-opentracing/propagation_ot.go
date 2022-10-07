@@ -35,7 +35,7 @@ const (
 
 func (p *textMapPropagator) Inject(
 	spanContext opentracing.SpanContext,
-	opaqueCarrier interface{},
+	opaqueCarrier any,
 ) error {
 	sc, ok := spanContext.(SpanContext)
 	if !ok {
@@ -73,7 +73,7 @@ func (p *textMapPropagator) Inject(
 }
 
 func (p *textMapPropagator) Extract(
-	opaqueCarrier interface{},
+	opaqueCarrier any,
 ) (opentracing.SpanContext, error) {
 	carrier, ok := opaqueCarrier.(opentracing.TextMapReader)
 	if !ok {
@@ -170,7 +170,7 @@ func (p *textMapPropagator) Extract(
 
 func (p *binaryPropagator) Inject(
 	spanContext opentracing.SpanContext,
-	opaqueCarrier interface{},
+	opaqueCarrier any,
 ) error {
 	sc, ok := spanContext.(SpanContext)
 	if !ok {
@@ -221,7 +221,7 @@ func (p *binaryPropagator) Inject(
 }
 
 func (p *binaryPropagator) Extract(
-	opaqueCarrier interface{},
+	opaqueCarrier any,
 ) (opentracing.SpanContext, error) {
 	carrier, ok := opaqueCarrier.(io.Reader)
 	if !ok {

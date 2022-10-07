@@ -174,7 +174,7 @@ func Start(options ...func(*Profile)) interface {
 		log.Fatalf("profile: could not create initial output directory: %v", err)
 	}
 
-	logf := func(format string, args ...interface{}) {
+	logf := func(format string, args ...any) {
 		if !prof.quiet {
 			log.Printf(format, args...)
 		}

@@ -89,7 +89,7 @@ func (m *MockKeyValue) EmitFloat64(key string, value float64) {
 }
 
 // EmitObject belongs to the log.Encoder interface
-func (m *MockKeyValue) EmitObject(key string, value interface{}) {
+func (m *MockKeyValue) EmitObject(key string, value any) {
 	m.Key = key
 	m.ValueKind = reflect.TypeOf(value).Kind()
 	m.ValueString = fmt.Sprint(value)

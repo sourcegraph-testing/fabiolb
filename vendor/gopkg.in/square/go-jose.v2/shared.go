@@ -185,7 +185,7 @@ type Header struct {
 
 	// Any headers not recognised above get unmarshaled
 	// from JSON in a generic manner and placed in this map.
-	ExtraHeaders map[HeaderKey]interface{}
+	ExtraHeaders map[HeaderKey]any
 }
 
 // Certificates verifies & returns the certificate chain present
@@ -208,7 +208,7 @@ func (h Header) Certificates(opts x509.VerifyOptions) ([][]*x509.Certificate, er
 	return leaf.Verify(opts)
 }
 
-func (parsed rawHeader) set(k HeaderKey, v interface{}) error {
+func (parsed rawHeader) set(k HeaderKey, v any) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -423,9 +423,9 @@ func (parsed rawHeader) sanitized() (h Header, err error) {
 			}
 		default:
 			if h.ExtraHeaders == nil {
-				h.ExtraHeaders = map[HeaderKey]interface{}{}
+				h.ExtraHeaders = map[HeaderKey]any{}
 			}
-			var v2 interface{}
+			var v2 any
 			err = json.Unmarshal(*v, &v2)
 			if err != nil {
 				err = fmt.Errorf("failed to unmarshal value: %v: %#v", err, string(*v))
@@ -458,7 +458,7 @@ func (dst rawHeader) isSet(k HeaderKey) bool {
 		return false
 	}
 
-	var dv interface{}
+	var dv any
 	err := json.Unmarshal(*dvr, &dv)
 	if err != nil {
 		return true

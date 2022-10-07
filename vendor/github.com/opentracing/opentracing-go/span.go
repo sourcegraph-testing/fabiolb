@@ -55,7 +55,7 @@ type Span interface {
 	// may ignore the tag, but shall not panic.
 	//
 	// Returns a reference to this Span for chaining.
-	SetTag(key string, value interface{}) Span
+	SetTag(key string, value any) Span
 
 	// LogFields is an efficient and type-checked way to record key:value
 	// logging data about a Span, though the programming interface is a little
@@ -87,7 +87,7 @@ type Span interface {
 	// bools, Go error instances, or arbitrary structs.
 	//
 	// (Note to implementors: consider the log.InterleavedKVToFields() helper)
-	LogKV(alternatingKeyValues ...interface{})
+	LogKV(alternatingKeyValues ...any)
 
 	// SetBaggageItem sets a key:value pair on this Span and its SpanContext
 	// that also propagates to descendants of this Span.
@@ -117,7 +117,7 @@ type Span interface {
 	// Deprecated: use LogFields or LogKV
 	LogEvent(event string)
 	// Deprecated: use LogFields or LogKV
-	LogEventWithPayload(event string, payload interface{})
+	LogEventWithPayload(event string, payload any)
 	// Deprecated: use LogFields or LogKV
 	Log(data LogData)
 }
@@ -161,7 +161,7 @@ type FinishOptions struct {
 type LogData struct {
 	Timestamp time.Time
 	Event     string
-	Payload   interface{}
+	Payload   any
 }
 
 // ToLogRecord converts a deprecated LogData to a non-deprecated LogRecord

@@ -99,7 +99,7 @@ func (c *Sys) ListPlugins(i *ListPluginsInput) (*ListPluginsResponse, error) {
 				return nil, err
 			}
 
-			pluginsIfc, ok := pluginsRaw.([]interface{})
+			pluginsIfc, ok := pluginsRaw.([]any)
 			if !ok {
 				return nil, fmt.Errorf("unable to parse plugins for %q type", pluginTypeStr)
 			}

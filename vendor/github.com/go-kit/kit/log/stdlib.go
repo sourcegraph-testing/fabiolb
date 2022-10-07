@@ -66,7 +66,7 @@ func NewStdlibAdapter(logger Logger, options ...StdlibAdapterOption) io.Writer {
 
 func (a StdlibAdapter) Write(p []byte) (int, error) {
 	result := subexps(p)
-	keyvals := []interface{}{}
+	keyvals := []any{}
 	var timestamp string
 	if date, ok := result["date"]; ok && date != "" {
 		timestamp = date

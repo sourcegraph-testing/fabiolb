@@ -29,8 +29,8 @@ func (v *stringSliceValue) Set(s string) error {
 	return nil
 }
 
-func (v *stringSliceValue) Get() interface{} { return []string(*v) }
-func (v *stringSliceValue) String() string   { return strings.Join(*v, ",") }
+func (v *stringSliceValue) Get() any       { return []string(*v) }
+func (v *stringSliceValue) String() string { return strings.Join(*v, ",") }
 
 type floatSliceValue []float64
 

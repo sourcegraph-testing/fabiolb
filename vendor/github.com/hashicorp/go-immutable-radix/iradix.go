@@ -246,10 +246,10 @@ func (t *Txn) mergeChild(n *Node) {
 }
 
 // insert does a recursive insertion
-func (t *Txn) insert(n *Node, k, search []byte, v interface{}) (*Node, interface{}, bool) {
+func (t *Txn) insert(n *Node, k, search []byte, v any) (*Node, any, bool) {
 	// Handle key exhaustion
 	if len(search) == 0 {
-		var oldVal interface{}
+		var oldVal any
 		didUpdate := false
 		if n.isLeaf() {
 			oldVal = n.leaf.val
@@ -453,7 +453,7 @@ func (t *Txn) deletePrefix(parent, n *Node, search []byte) (*Node, int) {
 
 // Insert is used to add or update a given key. The return provides
 // the previous value and a bool indicating if any was set.
-func (t *Txn) Insert(k []byte, v interface{}) (interface{}, bool) {
+func (t *Txn) Insert(k []byte, v any) (any, bool) {
 	newRoot, oldVal, didUpdate := t.insert(t.root, k, k, v)
 	if newRoot != nil {
 		t.root = newRoot
@@ -466,7 +466,7 @@ func (t *Txn) Insert(k []byte, v interface{}) (interface{}, bool) {
 
 // Delete is used to delete a given key. Returns the old value if any,
 // and a bool indicating if the key was set.
-func (t *Txn) Delete(k []byte) (interface{}, bool) {
+func (t *Txn) Delete(k []byte) (any, bool) {
 	newRoot, leaf := t.delete(nil, t.root, k)
 	if newRoot != nil {
 		t.root = newRoot
@@ -500,13 +500,13 @@ func (t *Txn) Root() *Node {
 
 // Get is used to lookup a specific key, returning
 // the value and if it was found
-func (t *Txn) Get(k []byte) (interface{}, bool) {
+func (t *Txn) Get(k []byte) (any, bool) {
 	return t.root.Get(k)
 }
 
 // GetWatch is used to lookup a specific key, returning
 // the watch channel, value and if it was found
-func (t *Txn) GetWatch(k []byte) (<-chan struct{}, interface{}, bool) {
+func (t *Txn) GetWatch(k []byte) (<-chan struct{}, any, bool) {
 	return t.root.GetWatch(k)
 }
 
@@ -617,7 +617,7 @@ func (t *Txn) Notify() {
 
 // Insert is used to add or update a given key. The return provides
 // the new tree, previous value and a bool indicating if any was set.
-func (t *Tree) Insert(k []byte, v interface{}) (*Tree, interface{}, bool) {
+func (t *Tree) Insert(k []byte, v any) (*Tree, any, bool) {
 	txn := t.Txn()
 	old, ok := txn.Insert(k, v)
 	return txn.Commit(), old, ok
@@ -625,7 +625,7 @@ func (t *Tree) Insert(k []byte, v interface{}) (*Tree, interface{}, bool) {
 
 // Delete is used to delete a given key. Returns the new tree,
 // old value if any, and a bool indicating if the key was set.
-func (t *Tree) Delete(k []byte) (*Tree, interface{}, bool) {
+func (t *Tree) Delete(k []byte) (*Tree, any, bool) {
 	txn := t.Txn()
 	old, ok := txn.Delete(k)
 	return txn.Commit(), old, ok
@@ -647,7 +647,7 @@ func (t *Tree) Root() *Node {
 
 // Get is used to lookup a specific key, returning
 // the value and if it was found
-func (t *Tree) Get(k []byte) (interface{}, bool) {
+func (t *Tree) Get(k []byte) (any, bool) {
 	return t.root.Get(k)
 }
 

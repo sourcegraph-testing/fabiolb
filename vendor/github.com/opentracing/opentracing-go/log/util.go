@@ -7,7 +7,7 @@ import (
 
 // InterleavedKVToFields converts keyValues a la Span.LogKV() to a Field slice
 // a la Span.LogFields().
-func InterleavedKVToFields(keyValues ...interface{}) ([]Field, error) {
+func InterleavedKVToFields(keyValues ...any) ([]Field, error) {
 	if len(keyValues)%2 != 0 {
 		return nil, fmt.Errorf("non-even keyValues len: %d", len(keyValues))
 	}

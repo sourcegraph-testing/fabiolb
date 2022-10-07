@@ -117,7 +117,7 @@ func ClearAllExtensions(m Message) {
 //
 // If the descriptor is type incomplete (i.e., ExtensionDesc.ExtensionType is nil),
 // then GetExtension returns the raw encoded bytes for the extension field.
-func GetExtension(m Message, xt *ExtensionDesc) (interface{}, error) {
+func GetExtension(m Message, xt *ExtensionDesc) (any, error) {
 	mr := MessageReflect(m)
 	if mr == nil || !mr.IsValid() || mr.Descriptor().ExtensionRanges().Len() == 0 {
 		return nil, errNotExtendable
@@ -199,13 +199,13 @@ func (r extensionResolver) FindExtensionByNumber(message protoreflect.FullName, 
 // GetExtensions returns a list of the extensions values present in m,
 // corresponding with the provided list of extension descriptors, xts.
 // If an extension is missing in m, the corresponding value is nil.
-func GetExtensions(m Message, xts []*ExtensionDesc) ([]interface{}, error) {
+func GetExtensions(m Message, xts []*ExtensionDesc) ([]any, error) {
 	mr := MessageReflect(m)
 	if mr == nil || !mr.IsValid() {
 		return nil, errNotExtendable
 	}
 
-	vs := make([]interface{}, len(xts))
+	vs := make([]any, len(xts))
 	for i, xt := range xts {
 		v, err := GetExtension(m, xt)
 		if err != nil {
@@ -220,7 +220,7 @@ func GetExtensions(m Message, xts []*ExtensionDesc) ([]interface{}, error) {
 }
 
 // SetExtension sets an extension field in m to the provided value.
-func SetExtension(m Message, xt *ExtensionDesc, v interface{}) error {
+func SetExtension(m Message, xt *ExtensionDesc, v any) error {
 	mr := MessageReflect(m)
 	if mr == nil || !mr.IsValid() || mr.Descriptor().ExtensionRanges().Len() == 0 {
 		return errNotExtendable

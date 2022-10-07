@@ -54,7 +54,7 @@ const (
 // Logger facilitates use of any logger supporting the required methods
 // rather than just standard log package log.Logger
 type Logger interface {
-	Printf(string, ...interface{})
+	Printf(string, ...any)
 }
 
 type MetricFilter struct {

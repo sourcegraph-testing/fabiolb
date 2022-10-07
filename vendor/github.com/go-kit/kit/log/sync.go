@@ -22,7 +22,7 @@ type loggerStruct struct {
 
 // Log implements the Logger interface by forwarding keyvals to the currently
 // wrapped logger. It does not log anything if the wrapped logger is nil.
-func (l *SwapLogger) Log(keyvals ...interface{}) error {
+func (l *SwapLogger) Log(keyvals ...any) error {
 	s, ok := l.logger.Load().(loggerStruct)
 	if !ok || s.Logger == nil {
 		return nil
@@ -43,9 +43,9 @@ func (l *SwapLogger) Swap(logger Logger) {
 //
 // If w implements the following interface, so does the returned writer.
 //
-//    interface {
-//        Fd() uintptr
-//    }
+//	interface {
+//	    Fd() uintptr
+//	}
 func NewSyncWriter(w io.Writer) io.Writer {
 	switch w := w.(type) {
 	case fdWriter:
@@ -108,7 +108,7 @@ func NewSyncLogger(logger Logger) Logger {
 
 // Log logs keyvals to the underlying Logger. If another log is already in
 // progress, the calling goroutine blocks until the syncLogger is available.
-func (l *syncLogger) Log(keyvals ...interface{}) error {
+func (l *syncLogger) Log(keyvals ...any) error {
 	l.mu.Lock()
 	err := l.logger.Log(keyvals...)
 	l.mu.Unlock()

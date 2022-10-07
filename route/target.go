@@ -61,7 +61,7 @@ type Target struct {
 	TxCounter gkm.Counter
 
 	// accessRules is map of access information for the target.
-	accessRules map[string][]interface{}
+	accessRules map[string][]any
 
 	// name of the auth handler for this target
 	AuthScheme string

@@ -119,11 +119,11 @@ func (s *ServiceConfigEntry) GetModifyIndex() uint64 {
 type ProxyConfigEntry struct {
 	Kind        string
 	Name        string
-	Namespace   string                 `json:",omitempty"`
-	Config      map[string]interface{} `json:",omitempty"`
-	MeshGateway MeshGatewayConfig      `json:",omitempty" alias:"mesh_gateway"`
-	Expose      ExposeConfig           `json:",omitempty"`
-	Meta        map[string]string      `json:",omitempty"`
+	Namespace   string            `json:",omitempty"`
+	Config      map[string]any    `json:",omitempty"`
+	MeshGateway MeshGatewayConfig `json:",omitempty" alias:"mesh_gateway"`
+	Expose      ExposeConfig      `json:",omitempty"`
+	Meta        map[string]string `json:",omitempty"`
 	CreateIndex uint64
 	ModifyIndex uint64
 }
@@ -180,7 +180,7 @@ func MakeConfigEntry(kind, name string) (ConfigEntry, error) {
 //
 // - This will only decode fields using their camel case json field
 // representations.
-func DecodeConfigEntry(raw map[string]interface{}) (ConfigEntry, error) {
+func DecodeConfigEntry(raw map[string]any) (ConfigEntry, error) {
 	var entry ConfigEntry
 
 	kindVal, ok := raw["Kind"]
@@ -216,7 +216,7 @@ func DecodeConfigEntry(raw map[string]interface{}) (ConfigEntry, error) {
 }
 
 func DecodeConfigEntryFromJSON(data []byte) (ConfigEntry, error) {
-	var raw map[string]interface{}
+	var raw map[string]any
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return nil, err
 	}
@@ -224,7 +224,7 @@ func DecodeConfigEntryFromJSON(data []byte) (ConfigEntry, error) {
 	return DecodeConfigEntry(raw)
 }
 
-func decodeConfigEntrySlice(raw []map[string]interface{}) ([]ConfigEntry, error) {
+func decodeConfigEntrySlice(raw []map[string]any) ([]ConfigEntry, error) {
 	var entries []ConfigEntry
 	for _, rawEntry := range raw {
 		entry, err := DecodeConfigEntry(rawEntry)
@@ -294,7 +294,7 @@ func (conf *ConfigEntries) List(kind string, q *QueryOptions) ([]ConfigEntry, *Q
 	parseQueryMeta(resp, qm)
 	qm.RequestTime = rtt
 
-	var raw []map[string]interface{}
+	var raw []map[string]any
 	if err := decodeBody(resp, &raw); err != nil {
 		return nil, nil, err
 	}

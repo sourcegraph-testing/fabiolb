@@ -13,7 +13,7 @@ import (
 
 // MarshalKeyvals returns the logfmt encoding of keyvals, a variadic sequence
 // of alternating keys and values.
-func MarshalKeyvals(keyvals ...interface{}) ([]byte, error) {
+func MarshalKeyvals(keyvals ...any) ([]byte, error) {
 	buf := &bytes.Buffer{}
 	if err := NewEncoder(buf).EncodeKeyvals(keyvals...); err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ var (
 // EncodeKeyval writes the logfmt encoding of key and value to the stream. A
 // single space is written before the second and subsequent keys in a record.
 // Nothing is written if a non-nil error is returned.
-func (enc *Encoder) EncodeKeyval(key, value interface{}) error {
+func (enc *Encoder) EncodeKeyval(key, value any) error {
 	enc.scratch.Reset()
 	if enc.needSep {
 		if _, err := enc.scratch.Write(space); err != nil {
@@ -72,7 +72,7 @@ func (enc *Encoder) EncodeKeyval(key, value interface{}) error {
 // unsupported type or that cause a MarshalerError are replaced by their error
 // but do not cause EncodeKeyvals to return an error. If a non-nil error is
 // returned some key/value pairs may not have be written.
-func (enc *Encoder) EncodeKeyvals(keyvals ...interface{}) error {
+func (enc *Encoder) EncodeKeyvals(keyvals ...any) error {
 	if len(keyvals) == 0 {
 		return nil
 	}
@@ -122,7 +122,7 @@ var ErrUnsupportedKeyType = errors.New("unsupported key type")
 // unsupported type.
 var ErrUnsupportedValueType = errors.New("unsupported value type")
 
-func writeKey(w io.Writer, key interface{}) error {
+func writeKey(w io.Writer, key any) error {
 	if key == nil {
 		return ErrNilKey
 	}
@@ -194,7 +194,7 @@ func writeBytesKey(w io.Writer, key []byte) error {
 	return err
 }
 
-func writeValue(w io.Writer, value interface{}) error {
+func writeValue(w io.Writer, value any) error {
 	switch v := value.(type) {
 	case nil:
 		return writeBytesValue(w, null)

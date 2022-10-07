@@ -19,8 +19,7 @@ import (
 // Builder constructs type descriptors from a raw file descriptor
 // and associated Go types for each enum and message declaration.
 //
-//
-// Flattened Ordering
+// # Flattened Ordering
 //
 // The protobuf type system represents declarations as a tree. Certain nodes in
 // the tree require us to either associate it with a concrete Go type or to
@@ -69,7 +68,7 @@ type Builder struct {
 	// and for input and output messages referenced by service methods.
 	// Dependencies must come after declarations, but the ordering of
 	// dependencies themselves is unspecified.
-	GoTypes []interface{}
+	GoTypes []any
 
 	// DependencyIndexes is an ordered list of indexes into GoTypes for the
 	// dependencies of messages, extensions, or services.
@@ -269,7 +268,7 @@ func (x depIdxs) Get(i, j int32) int32 {
 
 type (
 	resolverByIndex struct {
-		goTypes []interface{}
+		goTypes []any
 		depIdxs depIdxs
 		fileRegistry
 	}

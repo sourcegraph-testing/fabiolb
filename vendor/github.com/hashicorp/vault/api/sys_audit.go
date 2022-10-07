@@ -9,7 +9,7 @@ import (
 )
 
 func (c *Sys) AuditHash(path string, input string) (string, error) {
-	body := map[string]interface{}{
+	body := map[string]any{
 		"input": input,
 	}
 
