@@ -46,3 +46,4 @@ MIT
 # Author
 
 Yasuhiro Matsumoto (a.k.a mattn)
+Hello World

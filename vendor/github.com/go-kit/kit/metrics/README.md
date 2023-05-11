@@ -96,3 +96,4 @@ func exportGoroutines(g metrics.Gauge) {
 ```
 
 For more information, see [the package documentation](https://godoc.org/github.com/go-kit/kit/metrics).
+Hello World

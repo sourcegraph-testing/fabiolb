@@ -59,3 +59,4 @@ Next, make the required changes to the extracted files in the `fixtures` directo
 the changes are complete, run `make update_fixtures` to create a new `fixtures.ttar` file
 based on the updated `fixtures` directory.  And finally, verify the changes using
 `git diff fixtures.ttar`.
+Hello World

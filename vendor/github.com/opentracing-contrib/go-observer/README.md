@@ -62,3 +62,4 @@ observers need to observe all the span events, in which case, we may have
 to keep some callback functions empty. In effect, we will still call these
 functions, and that will incur unnecessary overhead. To know more about this
 and other tradeoffs, see this [discussion](https://github.com/opentracing/opentracing-go/pull/135#discussion_r105497329).
+Hello World

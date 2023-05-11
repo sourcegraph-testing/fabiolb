@@ -15,3 +15,4 @@ To render the page locally run the following command in the `fabio` root directo
     $ hugo serve -s docs --disableFastRender
 
 To view the site open http://localhost:1313/ in your browser.
+Hello World

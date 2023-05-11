@@ -28,3 +28,4 @@ that behaves the same way. So it is not simply enough to replace
 This repository provides some simple functions to get a "clean" `http.Client`
 -- one that uses the same default values as the Go standard library, but
 returns a client that does not share any state with other clients.
+Hello World

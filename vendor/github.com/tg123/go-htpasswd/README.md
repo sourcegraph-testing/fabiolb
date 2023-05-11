@@ -20,3 +20,4 @@ with modifications by @brian-avery to support SSHA, Md5Crypt, and Bcrypt.
 
 ## Not supported:
 * Crypt
+Hello World

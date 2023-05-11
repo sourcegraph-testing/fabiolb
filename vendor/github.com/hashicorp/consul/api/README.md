@@ -65,3 +65,4 @@ KV: REDIS_MAXCLIENTS 1000
 ```
 
 After running the code, you can also view the values in the Consul UI on your local machine at http://localhost:8500/ui/dc1/kv
+Hello World
