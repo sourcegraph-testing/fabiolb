@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -1165,7 +1164,7 @@ func TestLoad(t *testing.T) {
 				}
 
 			case tt.path != "":
-				if err := ioutil.WriteFile(tt.path, []byte(tt.data), 0600); err != nil {
+				if err := os.WriteFile(tt.path, []byte(tt.data), 0600); err != nil {
 					t.Fatalf("error writing file: %s", err)
 				}
 				defer os.Remove(tt.path)
